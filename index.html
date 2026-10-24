@@ -3,1521 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>플루칙의 감정 바퀴 (Plutchik's Wheel of Emotions)</title>
+    <title>마음 거울 일기장 - 심리 성찰 및 투사 분석 애플리케이션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --joy-color: #FCE17A;
-            --trust-color: #B5D585;
-            --fear-color: #5C9A6C;
-            --surprise-color: #55A2A3;
-            --sadness-color: #6C8BC1;
-            --disgust-color: #9375A7;
-            --anger-color: #DD6E66;
-            --anticipation-color: #E89A64;
-            --bg-color: #F8F9FA;
-            --text-dark: #2C3E50;
-            --text-light: #FFFFFF;
-        }
-
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 10px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Pretendard', sans-serif;
+            background-color: #F7F5F0;
+            color: #332F2C;
         }
-
-        h1 {
-            text-align: center;
-            font-size: 1.8rem;
-            margin-bottom: 2px;
-            color: #333;
-        }
-
-        p.subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 2px;
-            font-size: 1.1rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 1.2rem;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        /* 8 Basic Emotions Grid */
-        .spectrum-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .emotion-card {
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .emotion-header {
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .emotion-header span.eng {
-            font-size: 0.9rem;
-            font-weight: normal;
-            opacity: 0.8;
-            margin-top: 4px;
-        }
-
-        .emotion-levels {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .level {
-            padding: 12px 15px;
-            text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .level:hover {
-            filter: brightness(0.9);
-            transform: scale(1.02);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        .level:last-child {
-            border-bottom: none;
-        }
-
-        .level-title {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            pointer-events: none;
-        }
-
-        .level-name {
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            pointer-events: none;
-        }
-
-        .level-name span {
-            font-size: 0.8rem;
-            font-weight: normal;
-        }
-
-        /* Dyads (Mixed Emotions) */
-        .dyad-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        /* 2차, 3차 복합 감정 전용 3단 그리드 */
-        .complex-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 고정 */
-            gap: 15px;
-        }
-
-        /* 화면이 좁아질 경우를 대비한 반응형 처리 */
-        @media (max-width: 992px) {
-            .complex-grid {
-                grid-template-columns: repeat(2, 1fr); /* 태블릿에서는 2개씩 */
-            }
-        }
-
-        @media (max-width: 600px) {
-            .complex-grid {
-                grid-template-columns: 1fr; /* 모바일에서는 1개씩 */
-            }
-        }
-        .dyad-card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid #ccc;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .dyad-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-            background-color: #fdfdfd;
-        }
-
-        .dyad-result {
-            font-size: 1.2rem;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            pointer-events: none;
-        }
-
-        .dyad-result span {
-            font-size: 0.85rem;
-            color: #666;
-            font-weight: normal;
-        }
-
-        .dyad-formula {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.95rem;
-            color: #555;
-            pointer-events: none;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        /* Color Variations */
-        .card-joy .emotion-header { background-color: var(--joy-color); color: #333; }
-        .card-joy .level:nth-child(1) { background-color: #F3C623; color: #333; } 
-        .card-joy .level:nth-child(2) { background-color: var(--joy-color); color: #333; } 
-        .card-joy .level:nth-child(3) { background-color: #FDF1B8; color: #333; } 
-        
-        .card-trust .emotion-header { background-color: var(--trust-color); color: #333; }
-        .card-trust .level:nth-child(1) { background-color: #8EBA55; color: #fff; }
-        .card-trust .level:nth-child(2) { background-color: var(--trust-color); color: #333; }
-        .card-trust .level:nth-child(3) { background-color: #D6E8B3; color: #333; }
-
-        .card-fear .emotion-header { background-color: var(--fear-color); color: #fff; }
-        .card-fear .level:nth-child(1) { background-color: #38704A; color: #fff; }
-        .card-fear .level:nth-child(2) { background-color: var(--fear-color); color: #fff; }
-        .card-fear .level:nth-child(3) { background-color: #92BE9C; color: #333; }
-
-        .card-surprise .emotion-header { background-color: var(--surprise-color); color: #fff; }
-        .card-surprise .level:nth-child(1) { background-color: #337A7C; color: #fff; }
-        .card-surprise .level:nth-child(2) { background-color: var(--surprise-color); color: #fff; }
-        .card-surprise .level:nth-child(3) { background-color: #9CC9CA; color: #333; }
-
-        .card-sadness .emotion-header { background-color: var(--sadness-color); color: #fff; }
-        .card-sadness .level:nth-child(1) { background-color: #4A6596; color: #fff; }
-        .card-sadness .level:nth-child(2) { background-color: var(--sadness-color); color: #fff; }
-        .card-sadness .level:nth-child(3) { background-color: #AABBE2; color: #333; }
-
-        .card-disgust .emotion-header { background-color: var(--disgust-color); color: #fff; }
-        .card-disgust .level:nth-child(1) { background-color: #6A4D7A; color: #fff; }
-        .card-disgust .level:nth-child(2) { background-color: var(--disgust-color); color: #fff; }
-        .card-disgust .level:nth-child(3) { background-color: #C0AED1; color: #333; }
-
-        .card-anger .emotion-header { background-color: var(--anger-color); color: #fff; }
-        .card-anger .level:nth-child(1) { background-color: #BA4A45; color: #fff; }
-        .card-anger .level:nth-child(2) { background-color: var(--anger-color); color: #fff; }
-        .card-anger .level:nth-child(3) { background-color: #EFA8A4; color: #333; }
-
-        .card-anticipation .emotion-header { background-color: var(--anticipation-color); color: #fff; }
-        .card-anticipation .level:nth-child(1) { background-color: #C4723E; color: #fff; }
-        .card-anticipation .level:nth-child(2) { background-color: var(--anticipation-color); color: #fff; }
-        .card-anticipation .level:nth-child(3) { background-color: #F2C3A0; color: #333; }
-
-        /* Modal Styles */
-        .modal-overlay {
+        /* 스크롤바 숨기기 유틸리티 */
+        .hide-scrollbar::-webkit-scrollbar {
             display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
-
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-container {
-            background: #fff;
-            width: 90%;
-            max-width: 650px;
-            max-height: 85vh;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-            overflow: hidden;
-        }
-
-        .modal-overlay.active .modal-container {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            padding: 25px 30px;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            margin: 0;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-        }
-
-        .modal-title span.eng {
-            font-size: 1.1rem;
-            opacity: 0.8;
-            font-weight: normal;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: inherit;
-            font-size: 1.8rem;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-
-        .close-btn:hover {
-            opacity: 1;
-        }
-
-        .modal-body {
-            padding: 30px;
-            overflow-y: auto;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            color: #333;
-        }
-
-        .modal-body h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .modal-body p {
-            margin-bottom: 20px;
-        }
-
-        .modal-body ul {
-            padding-left: 20px;
-            margin-bottom: 20px;
-        }
-
-        .modal-body li {
-            margin-bottom: 8px;
-        }
-        
-        .tag {
-            display: inline-block;
-            background: #eee;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-right: 5px;
-            margin-bottom: 15px;
-            color: #555;
-        }
-
-        .related-tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .related-tag {
-            display: inline-block;
-            background: #f8f9fa;
-            border: 1px solid #ced4da;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.95rem;
-            color: #212529;
-            font-weight: 500;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-
-        .related-tag:hover {
-            background: #e9ecef;
-            border-color: #adb5bd;
-        }
-
-        /* 이미지 확대 모달 스타일 */
-        #imageModal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
-        }
-
-        #imageModal img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 8px;
-            cursor: zoom-out;
-        }
-
-        .image-container img {
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .image-container img:hover {
-            transform: scale(1.03);
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
-<body>
- <h1>플루칙의 감정 바퀴</h1>
-    <p class="subtitle">Plutchik's Wheel of Emotions</p>
-    
-    <div class="image-container" style="text-align: center; margin: 20px 0;" title="클릭해서 크게 보기">
-        <img src="plutchick.jpeg" alt="플루칙의 감정 바퀴" style="max-width: 50%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full mb-3 tracking-wide">내면 성찰 & 투사 분석 일기</span>
+            <h1 class="text-3xl sm:text-4xl font-bold text-stone-800 tracking-tight">마음 거울 일기장</h1>
+            <p class="text-stone-600 mt-2 text-sm sm:text-base max-w-2xl mx-auto">
+                타인 탓을 멈추고 내 안의 불편함을 직시하여 스스로를 치유하는 공간입니다. 사실과 내면의 스토리를 분리해 보세요.
+            </p>
+        </header>
+
+        <!-- Main Form Card -->
+        <main class="bg-white rounded-3xl shadow-sm border border-stone-200/80 p-6 sm:p-10 mb-10 transition-all duration-300">
+            <form id="journalForm" class="space-y-8">
+                <!-- 1. 일어난 사건 -->
+                <div>
+                    <label for="factInput" class="block text-base font-semibold text-stone-800 mb-1">
+                        1. 일어난 사건 <span class="text-amber-700 text-sm font-normal">(객관적인 사실만 기록하세요)</span>
+                    </label>
+                    <p class="text-xs text-stone-500 mb-2">해석이나 감정을 빼고, 카메라가 찍은 것처럼 누구든 동의할 사실만 적어보세요.</p>
+                    <textarea id="factInput" rows="3" required
+                        class="w-full rounded-xl border border-stone-300 p-4 text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm sm:text-base bg-stone-50/50"
+                        placeholder="예: 남편이 저녁 식사 중 내 말을 끊고 한숨을 쉬었다."></textarea>
+                </div>
+
+                <!-- 2. 트리거 체크 및 입력 -->
+                <div>
+                    <label class="block text-base font-semibold text-stone-800 mb-1">
+                        2. 작동된 트리거 <span class="text-amber-700 text-sm font-normal">(상대방의 어떤 모습이 거슬렸나요?)</span>
+                    </label>
+                    <p class="text-xs text-stone-500 mb-3">해당하는 항목을 체크하거나 직접 입력하세요.</p>
+                    
+                    <div id="triggerChips" class="flex flex-wrap gap-2 mb-3">
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="우왕좌왕하며 중심을 못 잡는 태도">우왕좌왕/중심 못 잡음</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="책임을 회피하거나 떠넘기는 모습">책임 회피/떠넘기기</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="지나치게 장황하고 간섭하는 말">장황한 말/간섭</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="날 선 비난이나 가르치려 드는 말투">비난/지적질</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="무시하는 듯한 시선이나 눈빛">무시하는 눈빛/표정</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="꽉 막힌 태도와 대화 거부(침묵)">침묵/대화 거부</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="이기적이거나 뻔뻔한 태도">이기적/뻔뻔함</button>
+                    </div>
+                    
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 mt-4">
+                        <p class="text-sm font-semibold text-stone-700 mb-3">상세 트리거 입력 <span class="text-xs font-normal text-stone-500">(해당하는 항목만 자유롭게 적어주세요)</span></p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-stone-600 mb-1">🏃 행동/태도 (예: 우왕좌왕, 책임 회피, 강압적)</label>
+                                <input type="text" id="triggerBehavior" class="w-full rounded-lg border border-stone-300 p-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-stone-600 mb-1">🗣️ 언어/소통 (예: 장황한 간섭, 비난, 침묵)</label>
+                                <input type="text" id="triggerCommunication" class="w-full rounded-lg border border-stone-300 p-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-stone-600 mb-1">😠 표정/비언어 (예: 무시하는 눈빛, 쌀쌀맞은 태도)</label>
+                                <input type="text" id="triggerNonVerbal" class="w-full rounded-lg border border-stone-300 p-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-stone-600 mb-1">🧩 성향/가치관 (예: 이기적임, 뻔뻔함, 무능함)</label>
+                                <input type="text" id="triggerValues" class="w-full rounded-lg border border-stone-300 p-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-stone-600 mb-1">✍️ 기타 트리거 (자유 입력)</label>
+                                <input type="text" id="triggerOther" class="w-full rounded-lg border border-stone-300 p-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 내가 느끼는 감정 (Emotions) -->
+                <div>
+                    <div class="flex items-end justify-between mb-1">
+                        <label for="emotionInput" class="block text-base font-semibold text-stone-800">
+                            3. 그 상황에서 내가 느끼는 감정
+                        </label>
+                        <button type="button" id="btnOpenEmotionCard" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1">
+                            <span>🎭</span> 감정카드
+                        </button>
+                    </div>
+                    <p class="text-xs text-stone-500 mb-2">화남, 억울함, 무기력함, 불안, 서운함 등 내 안의 감정을 솔직하게 적어보세요.</p>
+                    <input type="text" id="emotionInput" required
+                        class="w-full rounded-xl border border-stone-300 p-3 text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm sm:text-base bg-stone-50/50"
+                        placeholder="예: 무시당한 것 같아 억울하고, 화가 치밀어 오름">
+                </div>
+
+                <!-- 4. 나의 기대 (Expectations) -->
+                <div>
+                    <label for="expectationInput" class="block text-base font-semibold text-stone-800 mb-1">
+                        4. 나의 기대 (상대나 상황에 대한 바램)
+                    </label>
+                    <p class="text-xs text-stone-500 mb-2">'상대가 이렇게 해줘야 한다', '상황이 이렇게 되어야 한다'는 내 안의 기대나 통제 욕구를 적어보세요.</p>
+                    <textarea id="expectationInput" rows="3" required
+                        class="w-full rounded-xl border border-stone-300 p-4 text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm sm:text-base bg-stone-50/50"
+                        placeholder="예: 남편은 내 말을 끊지 말고 끝까지 들어주고 공감해줘야 해."></textarea>
+                </div>
+
+                <!-- 5. 내가 만드는 내 안의 생각들 -->
+                <div>
+                    <label for="storyInput" class="block text-base font-semibold text-stone-800 mb-1">
+                        5. 내가 만드는 내 안의 생각들 (스토리 / 소설)
+                    </label>
+                    <p class="text-xs text-stone-500 mb-2">상대방의 행동에 대해 내가 혼자 지어낸 허상이나 피해자 프레임(스토리)을 적어보세요.</p>
+                    <textarea id="storyInput" rows="3" required
+                        class="w-full rounded-xl border border-stone-300 p-4 text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm sm:text-base bg-stone-50/50"
+                        placeholder="예: 저 사람은 늘 나를 무시하고 공격하려 해. 나는 이 집에서 아무 쓸모없는 존재야."></textarea>
+                </div>
+
+                <!-- 6. 내가 극도로 싫어하는 나의 모습 -->
+                <div>
+                    <label for="shadowInput" class="block text-base font-semibold text-stone-800 mb-1">
+                        6. 내가 찾아낸, 트리거가 된 '내가 극도로 싫어하는 나의 모습'
+                    </label>
+                    <p class="text-xs text-stone-500 mb-2">상대방을 통해 본, 사실은 내 안에도 숨겨져 있거나 두려워하는 나의 미숙한 면모는 무엇인가요?</p>
+                    <textarea id="shadowInput" rows="3" required
+                        class="w-full rounded-xl border border-stone-300 p-4 text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm sm:text-base bg-stone-50/50"
+                        placeholder="예: 나 스스로도 결정을 내리지 못하고 우왕좌왕할 때가 있는데, 남이 그걸 보여주니 몹시 불안하고 혐오스러웠다."></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex items-center justify-end space-x-4 pt-4 border-t border-stone-100">
+                    <button type="button" id="resetBtn" class="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-600 hover:bg-stone-100 text-sm font-medium transition-colors">
+                        작성 초기화
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-semibold shadow-sm transition-all">
+                        저장하기
+                    </button>
+                </div>
+            </form>
+        </main>
+
+        <!-- Saved Entries Section -->
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-stone-800">성찰 기록장 목록</h2>
+                <span id="entryCount" class="text-xs font-medium text-stone-500 bg-stone-200/70 px-2.5 py-1 rounded-full">0개의 기록</span>
+            </div>
+            
+            <div id="entriesContainer" class="space-y-4">
+                <!-- Dynamic records will be injected here -->
+            </div>
+        </section>
     </div>
 
-    <div class="container">
-        <h2>8가지 기본 감정 스펙트럼(심화→기본 →약화)</h2>
-        <div class="spectrum-grid">
-            <div class="emotion-card card-joy">
-                <div class="emotion-header">기쁨 <span class="eng">Joy</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="ecstasy" data-color="#F3C623" data-text="#333"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">황홀 <span>Ecstasy</span></span></div>
-                    <div class="level" data-emotion="joy" data-color="#FCE17A" data-text="#333"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">기쁨 <span>Joy</span></span></div>
-                    <div class="level" data-emotion="serenity" data-color="#FDF1B8" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">평온 <span>Serenity</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-trust">
-                <div class="emotion-header">신뢰 <span class="eng">Trust</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="admiration" data-color="#8EBA55" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">경애 <span>Admiration</span></span></div>
-                    <div class="level" data-emotion="trust" data-color="#B5D585" data-text="#333"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">신뢰 <span>Trust</span></span></div>
-                    <div class="level" data-emotion="acceptance" data-color="#D6E8B3" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">수용 <span>Acceptance</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-fear">
-                <div class="emotion-header">두려움 <span class="eng">Fear</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="terror" data-color="#38704A" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">공포 <span>Terror</span></span></div>
-                    <div class="level" data-emotion="fear" data-color="#5C9A6C" data-text="#fff"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">두려움 <span>Fear</span></span></div>
-                    <div class="level" data-emotion="apprehension" data-color="#92BE9C" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">불안 <span>Apprehension</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-surprise">
-                <div class="emotion-header">놀람 <span class="eng">Surprise</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="amazement" data-color="#337A7C" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">경탄 <span>Amazement</span></span></div>
-                    <div class="level" data-emotion="surprise" data-color="#55A2A3" data-text="#fff"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">놀람 <span>Surprise</span></span></div>
-                    <div class="level" data-emotion="distraction" data-color="#9CC9CA" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">동요 <span>Distraction</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-sadness">
-                <div class="emotion-header">슬픔 <span class="eng">Sadness</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="grief" data-color="#4A6596" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">비탄 <span>Grief</span></span></div>
-                    <div class="level" data-emotion="sadness" data-color="#6C8BC1" data-text="#fff"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">슬픔 <span>Sadness</span></span></div>
-                    <div class="level" data-emotion="pensiveness" data-color="#AABBE2" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">감상적 <span>Pensiveness</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-disgust">
-                <div class="emotion-header">혐오 <span class="eng">Disgust</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="loathing" data-color="#6A4D7A" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">증오 <span>Loathing</span></span></div>
-                    <div class="level" data-emotion="disgust" data-color="#9375A7" data-text="#fff"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">혐오 <span>Disgust</span></span></div>
-                    <div class="level" data-emotion="boredom" data-color="#C0AED1" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">권태 <span>Boredom</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-anger">
-                <div class="emotion-header">분노 <span class="eng">Anger</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="rage" data-color="#BA4A45" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">격노 <span>Rage</span></span></div>
-                    <div class="level" data-emotion="anger" data-color="#DD6E66" data-text="#fff"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">분노 <span>Anger</span></span></div>
-                    <div class="level" data-emotion="annoyance" data-color="#EFA8A4" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">짜증 <span>Annoyance</span></span></div>
-                </div>
-            </div>
-
-            <div class="emotion-card card-anticipation">
-                <div class="emotion-header">기대 <span class="eng">Anticipation</span></div>
-                <div class="emotion-levels">
-                    <div class="level" data-emotion="vigilance" data-color="#C4723E" data-text="#fff"><span class="level-title">강한 감정 (중심,심화)</span><span class="level-name">경계 <span>Vigilance</span></span></div>
-                    <div class="level" data-emotion="anticipation" data-color="#E89A64" data-text="#fff"><span class="level-title">기본 감정 (중간,기본)</span><span class="level-name">기대 <span>Anticipation</span></span></div>
-                    <div class="level" data-emotion="interest" data-color="#F2C3A0" data-text="#333"><span class="level-title">약한 감정 (외곽,약화)</span><span class="level-name">관심 <span>Interest</span></span></div>
-                </div>
-            </div>
-
-        </div>
-
-        <h2>1차 혼합 감정 (인접한 기본 감정)</h2>
-        <div class="dyad-grid">
-            <div class="dyad-card" data-emotion="optimism" data-color="#E89A64" data-text="#fff" style="border-color: #E89A64;">
-                <div class="dyad-result">낙관 <span>Optimism</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--anticipation-color);"></span> 기대 + 기쁨 <span class="dot" style="background: var(--joy-color);"></span>
-                </div>
-            </div>
-
-            <div class="dyad-card" data-emotion="aggressiveness" data-color="#E89A64" data-text="#fff" style="border-color: #E89A64;">
-                <div class="dyad-result">공격성 <span>Aggressiveness</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--anger-color);"></span> 분노 + 기대 <span class="dot" style="background: var(--anticipation-color);"></span>
-                </div>
-            </div>
-
-            <div class="dyad-card" data-emotion="contempt" data-color="#DD6E66" data-text="#fff" style="border-color: #DD6E66;">
-                <div class="dyad-result">경멸 <span>Contempt</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--disgust-color);"></span> 혐오 + 분노 <span class="dot" style="background: var(--anger-color);"></span>
-                </div>
-            </div>
-            <div class="dyad-card" data-emotion="remorse" data-color="#9375A7" data-text="#fff" style="border-color: #9375A7;">
-                <div class="dyad-result">후회 <span>Remorse</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--sadness-color);"></span> 슬픔 + 혐오 <span class="dot" style="background: var(--disgust-color);"></span>
-                </div>
-            </div>
-            <div class="dyad-card" data-emotion="disapproval" data-color="#6C8BC1" data-text="#fff" style="border-color: #6C8BC1;">
-                <div class="dyad-result">실망 <span>Disapproval</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--surprise-color);"></span> 놀람 + 슬픔 <span class="dot" style="background: var(--sadness-color);"></span>
-                </div>
-            </div>
-            <div class="dyad-card" data-emotion="awe" data-color="#55A2A3" data-text="#fff" style="border-color: #55A2A3;">
-                <div class="dyad-result">외경 <span>Awe</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--fear-color);"></span> 두려움 + 놀람 <span class="dot" style="background: var(--surprise-color);"></span>
-                </div>
-            </div>
-            <div class="dyad-card" data-emotion="submission" data-color="#5C9A6C" data-text="#fff" style="border-color: #5C9A6C;">
-                <div class="dyad-result">복종 <span>Submission</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--trust-color);"></span> 신뢰 + 두려움 <span class="dot" style="background: var(--fear-color);"></span>
-                </div>
-            </div>
-            <div class="dyad-card" data-emotion="love" data-color="#B5D585" data-text="#333" style="border-color: #B5D585;">
-                <div class="dyad-result">사랑 <span>Love</span></div>
-                <div class="dyad-formula">
-                    <span class="dot" style="background: var(--joy-color);"></span> 기쁨 + 신뢰 <span class="dot" style="background: var(--trust-color);"></span>
-                </div>
-            </div>
-        </div>
-
-        <h2>2차 / 3차 복합 감정 (심화 혼합)</h2>
-        <div class="complex-grid"> <!-- 클래스 이름을 dyad-grid에서 complex-grid로 변경 -->
-            <div class="dyad-card" data-emotion="hope" data-color="#B5D585" data-text="#333" style="border-color: #B5D585;">
-                <div class="dyad-result">동경</div>
-                <div class="dyad-formula">예기 + 기쁨 + 신뢰 + 놀람 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="jealousy" data-color="#5C9A6C" data-text="#fff" style="border-color: var(--fear-color);">
-                <div class="dyad-result">질투</div>
-                <div class="dyad-formula">불안 + 두려움 + 분노 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="embarrassment" data-color="#9375A7" data-text="#fff" style="border-color: var(--disgust-color);">
-                <div class="dyad-result">창피함</div>
-                <div class="dyad-formula">혐오 + 놀람 + 두려움 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="humiliation" data-color="#DD6E66" data-text="#fff" style="border-color: var(--anger-color);">
-                <div class="dyad-result">굴욕감</div>
-                <div class="dyad-formula">혐오 + 두려움 + 분노 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="self_esteem" data-color="#FCE17A" data-text="#333" style="border-color: var(--joy-color);">
-                <div class="dyad-result">자존감</div>
-                <div class="dyad-formula">분노 + 기쁨 + 신뢰 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="inferiority" data-color="#6C8BC1" data-text="#fff" style="border-color: var(--sadness-color);">
-                <div class="dyad-result">열등감</div>
-                <div class="dyad-formula">슬픔 + 두려움 + 혐오 + 분노 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="guilt_complex" data-color="#FCE17A" data-text="#333" style="border-color: var(--joy-color);">
-                <div class="dyad-result">죄책감</div>
-                <div class="dyad-formula">기쁨 + 두려움 + 슬픔 + 혐오 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="dissatisfaction" data-color="#6C8BC1" data-text="#fff" style="border-color: var(--sadness-color);">
-                <div class="dyad-result">불만</div>
-                <div class="dyad-formula">슬픔 + 혐오 + 놀람 + 예기 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="loneliness" data-color="#9375A7" data-text="#fff" style="border-color: var(--disgust-color);">
-                <div class="dyad-result">고독감</div>
-                <div class="dyad-formula">슬픔 + 혐오 + 두려움 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="need_recognition" data-color="#E89A64" data-text="#fff" style="border-color: var(--anticipation-color);">
-                <div class="dyad-result">인정 욕구</div>
-                <div class="dyad-formula">기쁨 + 두려움 + 예기 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="superiority" data-color="#B5D585" data-text="#333" style="border-color: var(--trust-color);">
-                <div class="dyad-result">우월감</div>
-                <div class="dyad-formula">분노 + 신뢰 + 기쁨 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="greed" data-color="#FCE17A" data-text="#333" style="border-color: var(--joy-color);">
-                <div class="dyad-result">고독욕(탐욕)</div>
-                <div class="dyad-formula">기쁨 + 두려움 + 혐오 등</div>
-            </div>
-            <div class="dyad-card" data-emotion="self_sacrifice" data-color="#5C9A6C" data-text="#fff" style="border-color: var(--fear-color);">
-                <div class="dyad-result">자기 희생심</div>
-                <div class="dyad-formula">두려움 + 혐오 + 슬픔 + 예기 등</div>
-            </div>
+    <!-- Alert Modal -->
+    <div id="customModal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-lg border border-stone-100 text-center">
+            <h3 id="modalTitle" class="text-lg font-bold text-stone-800 mb-2">알림</h3>
+            <p id="modalMessage" class="text-sm text-stone-600 mb-6">메시지 내용</p>
+            <button id="modalCloseBtn" class="w-full py-2.5 bg-amber-800 hover:bg-amber-900 text-white font-medium rounded-xl text-sm transition-colors">
+                확인
+            </button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="emotionModal">
-        <div class="modal-container">
-            <div class="modal-header" id="modalHeader">
-                <h2 class="modal-title" id="modalTitle">감정 <span>Emotion</span></h2>
-                <button class="close-btn" id="closeModal">&times;</button>
+    <!-- 감정 사전 모달 -->
+    <div id="emotionModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-[60]">
+        <div class="bg-white rounded-2xl max-w-5xl w-full flex flex-col shadow-2xl border border-stone-200 max-h-[90vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-stone-50 px-6 py-4 border-b border-stone-200 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-stone-800">감정 사전 (86개)</h3>
+                    <p class="text-xs text-stone-500 mt-1">자신의 마음과 가장 가까운 감정 단어를 찾아보세요.</p>
+                </div>
+                <button type="button" id="emotionModalCloseBtn" class="text-stone-400 hover:text-stone-600 text-3xl leading-none transition-colors">&times;</button>
             </div>
-            <div class="modal-body" id="modalBody">
+            
+            <!-- Modal Body (Grid) -->
+            <div class="p-6 overflow-y-auto flex-1 bg-stone-50/30">
+                <div id="emotionGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- 감정 카드 동적 생성 영역 -->
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="imageModal" onclick="this.style.display='none'">
-        <img src="plutchick.jpeg" alt="확대된 이미지">
     </div>
 
     <script>
-        const imageContainer = document.querySelector('.image-container img');
-        const imageModal = document.getElementById('imageModal');
+        // ----------------------------------------------------
+        // 전체 감정 데이터베이스 (86개 상세 버전)
+        // ----------------------------------------------------
+        const emotionsData = [
+            { name: "기쁘다", cat: "cat-joy", desc: "원하던 일이 뜻대로 이루어져 마음이 매우 즐겁고 흐뭇한 상태", sit: "목표 달성이나 축하를 들었을 때", body: "가슴이 벅차오르고 입가에 미소가 번지며 몸이 가벼워짐", aff: "이 기쁨을 충분히 누리며 나를 축하합니다." },
+            { name: "감사하다", cat: "cat-joy", desc: "상대의 선의나 주어진 상황에 고마움을 느껴 마음이 따뜻하게 열리는 상태", sit: "배려를 경험하거나 평화를 깨달았을 때", body: "가슴 부위가 훈훈해지고 어깨의 긴장이 스르르 풀림", aff: "세상이 건네는 모든 친절에 감사합니다." },
+            { name: "행복하다", cat: "cat-joy", desc: "생활 속에서 충분한 만족과 기쁨을 느끼며 내면이 훈훈하게 가득 찬 상태", sit: "사랑하는 이들과 함께하는 순간", body: "온몸에 따뜻한 에너지가 퍼지고 호흡이 깊고 편안해짐", aff: "나는 지금 이 순간 행복할 자격이 있습니다." },
+            { name: "감동하다", cat: "cat-joy", desc: "타인의 진심이나 아름다운 모습에 마음이 크게 움직여 가슴이 뭉클해지는 떨림", sit: "명장면이나 희생을 보았을 때", body: "콧날이 시큰해지거나 가슴 중앙이 조여오는 듯한 뭉클함", aff: "내 마음을적시는 따뜻한 떨림을 소중히 여깁니다." },
+            { name: "감격스럽다", cat: "cat-joy", desc: "기대 이상의 큰 기쁨이나 벅찬 상황을 마주하여 마음이 강렬하게 벅차오르는 느낌", sit: "오랜 노력 끝에 큰 성취를 이루거나 간절히 바라던 일이 이루어졌을 때", body: "심장 박동이 빨라지고 눈시울이 붉어지며 온몸에 찌릿한 전율이 흐르는 느낌", aff: "내게 찾아온 이 벅찬 순간을 온전히 누리며 깊이 감사합니다." },
+            { name: "만족하다", cat: "cat-joy", desc: "모자람 없이 마음에 흡족하여 모나지 않고 있는 그대로를 긍정하는 여유", sit: "몰두한 일을 마친 뒤 쉴 때", body: "몸의 모든 근육이 이완되고 미각이나 후각이 예민해짐", aff: "나는 이미 충분하며 지금 이대로 만족합니다." },
+            { name: "든든하다", cat: "cat-joy", desc: "뒤를 받쳐주는 신뢰나 지지가 있음을 확인하여 마음이 굳건하고 강인해진 상태", sit: "나를 믿어주는 사람의 격려를 받았을 때", body: "척추가 곧게 펴지는 느낌과 함께 아랫배에 힘이 들어감", aff: "소중한 존재들이 나를 지켜줍니다." },
+            { name: "자랑스럽다", cat: "cat-joy", desc: "스스로 이뤄낸 성취나 대상의 가치를 대견하고 떳떳하게 여기는 마음", sit: "어려운 도전을 끝내거나 성장을 볼 때", body: "어깨가 펴지고 고개가 들리며 심장이 힘차게 뜀", aff: "나는 나의 노력을 진심으로 자랑스러워합니다." },
+            { name: "편안하다", cat: "cat-joy", desc: "어떠한 걱정이나 얽매임이 없이 몸과 마음의 긴장이 풀리고 안정을 되찾은 상태", sit: "따뜻한 차를 마시며 쉴 때", body: "눈꺼풀이 가벼워지고 손끝과 발끝까지 이완됨", aff: "나는 모든 긴장을 내려놓고 평온에 머눕니다." },
+            { name: "뿌듯하다", cat: "cat-joy", desc: "성실한 노력의 결과로 가슴이 벅차오르고 내면이 가득 채워지는 듯한 성취감", sit: "하루의 할 일을 성실히 마친 순간", body: "가슴 상부가 넓게 확장되는 느낌과 가벼운 고양감", aff: "성실하게 채워온 나의 시간이 자랑스럽습니다." },
+            { name: "기대하다", cat: "cat-joy", desc: "앞으로 일어날 긍정적인 변화나 만남을 상상하며 마음속에 샘솟는 활기", sit: "새로운 도전이나 기다리던 만남 전", body: "몸이 앞으로 기울어지고 눈빛이 반짝이며 에너지가 상승함", aff: "찾아올 멋진 미래를 설레며 기다립니다." },
+            { name: "반갑다", cat: "cat-joy", desc: "그리워하던 존재를 다시 마주하게 되어 단절되었던 연결이 회복되는 기쁨", sit: "친한 친구를 오랜만에 만났을 때", body: "목소리 톤이 높아지고 손동작이 커지며 심박수가 증가함", aff: "만남이 주는 활기찬 에너지를 맞이합니다." },
+            { name: "신나다", cat: "cat-joy", desc: "흥분과 기대로 인해 몸 전체에 활발하고 유쾌한 에너지가 강하게 도는 상태", sit: "공연을 보러 가기 직전이나 여행길", body: "손발을 가만히 두기 어렵고 몸에 가벼운 전율이 느껴짐", aff: "내 안의 즐거운 에너지가 힘차게 솟구칩니다." },
+            { name: "재미있다", cat: "cat-joy", desc: "흥미로운 자극이나 활동에 깊이 몰입하여 느끼는 즐겁고 유쾌한 기분", sit: "좋아하는 취미 생활에 몰입할 때", body: "입꼬리가 올라가고 눈 주변의 근육이 부드러워짐", aff: "삶은 즐거운 놀이터이며 매 순간을 즐깁니다." },
+            { name: "당당하다", cat: "cat-joy", desc: "자신의 가치와 신념에 확신을 가져 남 앞에 굽힘 없이 떳떳하고 곧은 상태", sit: "진실을 말하거나 원칙에 따라 행동할 때", body: "발바닥이 지면에 단단히 닿은 느낌과 목소리에 힘이 실림", aff: "나는 나의 존재와 선택에 확신이 있습니다." },
+            { name: "평온하다", cat: "cat-joy", desc: "갈등이나 외부 자극이 걷히고 내면의 질서가 잡혀 깊은 안식을 누리는 상태", sit: "갈등 해결 후 고요한 시간을 가질 때", body: "얼굴 근육이 완전히 풀리고 호흡의 주기가 일정해짐", aff: "내 마음은 잔잔한 호수처럼 고요합니다." },
+            
+            { name: "사랑스럽다", cat: "cat-love", desc: "대상의 존재가 너무나 소중하고 예뻐서 온 마음으로 아껴주고 싶은 깊은 애정", sit: "잠든 아기나 반려동물을 볼 때", body: "심장 부위가 간질거리고 온몸의 감각이 부드러워짐", aff: "내 마음의 사랑이 주변을 따뜻하게 비춥니다." },
+            { name: "설레다", cat: "cat-love", desc: "새로운 가능성이나 사랑하는 존재에 대한 기대로 가슴이 잔잔하게 뛰는 기분", sit: "좋아하는 사람을 만나기 전", body: "가슴이 두근거리고 아랫배가 화해지는 묘한 떨림", aff: "기분 좋은 떨림이 삶을 새롭게 깨웁니다." },
+            { name: "미안하다", cat: "cat-love", desc: "자신의 행동이 타인에게 불편이나 상처를 주었음을 인정하고 회복을 바라는 마음", sit: "약속에 늦었거나 상처를 주었을 때", body: "가슴이 답답하고 고개가 숙여지며 눈치를 보게 됨", aff: "나의 진심 어린 사과가 관계를 회복시킵니다." },
+            { name: "따뜻하다", cat: "cat-love", desc: "타인의 친절과 위로를 경험하며 마음속의 경계와 긴장이 부드럽게 녹아내리는 상태", sit: "위로를 받거나 깊은 교감을 나눌 때", body: "몸의 온도가 올라가는 듯한 느낌과 함께 표정이 온화해짐", aff: "내 마음은 사랑의 온기로 가득합니다." },
+            { name: "애틋하다", cat: "cat-love", desc: "사랑하는 대상의 아픔이나 소중함이 마음 깊이 느껴져서, 도와주고 싶고 마음이 짠하게 저려오는 감정", sit: "힘겨워하는 소중한 사람을 바라보거나, 과거의 따뜻한 추억이 떠올랐을 때", body: "가슴 중앙이 뭉클하고 부드럽게 죄여오는 느낌과 함께 눈시울이 살짝 뜨거워짐", aff: "내 마음의 깊은 사랑이 당신에게 따뜻한 위로로 닿기를 바랍니다." },
+            { name: "안도하다", cat: "cat-love", desc: "마음을 무겁게 짓누르던 걱정이 해결되거나 눈앞의 위험이 사라져 놓이는 상태", sit: "어려운 고비를 무사히 넘겼을 때", body: "참았던 숨을 깊게 내뱉으며(한숨) 온몸의 힘이 쭉 빠짐", aff: "폭풍이 지나갔습니다. 이제는 안전합니다." },
+            
+            { name: "불안하다", cat: "cat-anx", desc: "다가올 불확실한 상황에 대비하여 신경과 감각이 예민하게 깨어있는 긴장 상태", sit: "결과를 기다리거나 불확실한 미래 앞에서", body: "심장이 빠르게 뛰고 손발이 차가워지며 호흡이 얕아짐", aff: "불안은 나를 지키려는 신호일 뿐입니다." },
+            { name: "걱정하다", cat: "cat-anx", desc: "아직 일어나지 않은 부정적인 가능성에 온 신경과 에너지가 쏠려 있는 상태", sit: "연락이 늦거나 해결 안 된 일이 있을 때", body: "미간에 주름이 잡히고 머리 뒷부분이 팽팽하게 당김", aff: "걱정 대신 지금 할 수 있는 행동에 집중합니다." },
+            { name: "혼란스럽다", cat: "cat-anx", desc: "상충하는 생각과 욕구가 마음속에서 뒤엉켜 판단의 기준과 질서가 흔들리는 상태", sit: "중요한 갈림길에서 판단이 서지 않을 때", body: "머릿속이 멍해지거나 눈동자가 자주 흔들리며 어지러움", aff: "생각이 걷히면 곧 명확한 답이 보일 것입니다." },
+            { name: "긴장하다", cat: "cat-anx", desc: "중요한 일이나 낯선 환경을 앞두고 몸과 마음이 굳어 조마조마해진 상태", sit: "면접을 앞두고 너무 긴장해서 손에 땀이 났다.", body: "손바닥에 땀이 나고 어깨가 귀 쪽으로 바짝 올라감", aff: "이 긴장은 준비되었다는 증거입니다." },
+            { name: "조마조마하다", cat: "cat-anx", desc: "결과가 나오기까지 마음을 놓지 못하고, 혹시나 잘못되지 않을까 불안해하며 전전긍긍하는 상태", sit: "나의 노력과 별개로 결과가 결정되기를 기다리고 있거나, 불안한 상황이 지속될 때", body: "심장이 불규칙하게 뛰고 소화가 잘 안 되며, 자꾸 몸을 뒤척이거나 주변을 살피게 됨", aff: "불확실함은 삶의 과정입니다. 나의 마음을 편안하게 내려놓고 결과를 신뢰합니다." },
+            { name: "놀라다", cat: "cat-anx", desc: "뜻밖의 갑작스러운 변화나 충격을 마주하여 순간적으로 신체 감각이 얼어붙는 상태", sit: "예상치 못한 소식이나 큰 소리가 날 때", body: "눈이 커지고 숨이 턱 막히며 몸이 순간적으로 굳음", aff: "차분하게 안정을 되찾고 상황을 봅니다." },
+            { name: "당황하다", cat: "cat-anx", desc: "예상치 못한 돌발 상황을 마주하여 대처 능력이 일시적으로 마비되고 허둥대는 상태", sit: "실수를 하거나 갑작스러운 질문을 받을 때", body: "얼굴이 화끈거림을 느끼고 머릿속이 하얘지며 손동작이 꼬임", aff: "당황해도 괜찮습니다. 지혜를 찾을 것입니다." },
+            { name: "두렵다", cat: "cat-anx", desc: "위협적이거나 해를 끼칠 만한 대상을 마주하여 도망치거나 저항하고 싶은 무서운 감정", sit: "압박을 주는 상대나 공포를 마주할 때", body: "몸이 떨리고 입술이 마르며 뒤로 물러나고 싶어짐", aff: "내 안의 용기를 믿으며 나를 지킵니다." },
+            { name: "무섭다", cat: "cat-anx", desc: "눈앞의 구체적인 위험이나 공포 대상 앞에서 자신을 보호하려는 방어 기제가 작동한 상태", sit: "천둥번개나 위험 요소를 발견할 때", body: "소름이 돋고 식은땀이 흐르며 근육이 경직됨", aff: "나는 안전한 곳에 있습니다. 곧 지나갑니다." },
+            { name: "초조하다", cat: "cat-anx", desc: "일이 뜻대로 되지 않거나 기한에 임박하여 마음이 조급하고 애가 타는 상태", sit: "순서를 기다리거나 기한이 임박할 때", body: "다리를 떨거나 손톱을 만지작거리며 자꾸 시계를 봄", aff: "모든 것은 제때 이루어집니다. 나를 믿습니다." },
+            { name: "당혹스럽다", cat: "cat-anx", desc: "예상치 못한 상황이나 질문에 직면하여 어떻게 반응해야 할지 몰라 마음이 갈피를 잡지 못하고 당황스러운 상태", sit: "갑작스러운 상황 변화나 당황스러운 질문을 받았을 때", body: "심장 박동이 빨라지고, 사고가 일시적으로 정지하며, 눈동자가 흔들리고 경직된 표정을 짓게 됨", aff: "예측할 수 없는 순간은 성장의 기회입니다. 지금의 당황스러움을 있는 그대로 받아들이고 천천히 대응합니다."},
+            { name: "무안하다", cat: "cat-anx", desc: "예상치 못한 상황이나 타인의 시선 속에서 부끄럽고 어색하여 낯이 뜨거워지고 옴짝달싹하기 어려운 상태", sit: "예상치 못한 실수를 하거나 민망한 상황에 처해 남들의 시선을 의식하게 되었을 때", body: "얼굴이나 귀가 화끈거리고, 시선을 어디 두어야 할지 몰라 당황하며 몸이 굳어짐", aff: "남들 앞에서 쑥스럽고 민망한 순간도 나를 돌아보는 자연스러운 경험입니다. 그 어색함을 가만히 안아주고 숨을 고릅니다." },
+            { name: "부담스럽다", cat: "cat-anx", desc: "자신이 감당하기 어려운 무거운 책임이나 큰 기대를 요구받아 생기는 중압감", sit: "무리한 부탁을 받거나 책임이 무거울 때", body: "어깨와 목덜미가 묵직하고 가슴이 답답하게 압박됨", aff: "나는 내 한계를 존중하며 거절할 수 있습니다." },
+            { name: "막막하다", cat: "cat-anx", desc: "해결의 실마리가 전혀 보이지 않고 의지할 곳도 없어 어찌할 바를 모르는 무력한 상태", sit: "진로 등 선택지가 보이지 않을 때", body: "눈앞이 흐릿한 기분과 함께 깊은 숨이 자주 나옴", aff: "한 걸음씩 나아갑니다. 길은 만들어집니다." },
+            { name: "위축되다", cat: "cat-anx", desc: "비난이나 비교 등으로 인해 자신감을 잃고 마음이 조그맣게 오그라드는 상태", sit: "비난을 받거나 비교를 당할 때", body: "가슴을 웅크리게 되고 목소리가 기어들어 가듯 작아짐", aff: "나는 그 자체로 고유한 빛을 가진 존재입니다." },
+            { name: "꺼림칙하다", cat: "cat-anx", desc: "어떤 상황이나 태도가 도덕적, 논리적, 직관적으로 마음에 걸려 개운하지 않고 불쾌한 상태", sit: "상식적이지 않은 일을 접하거나, 내 가치관에 어긋나는 선택을 강요받을 때", body: "미간이 살짝 찌푸려지고 가슴 한쪽이 무겁거나 답답한 느낌이 듦", aff: "나는 내면의 소리에 귀를 기울이고, 명확함과 진실함을 선택할 수 있는 힘이 있습니다." },
+            { name: "찜찜하다", cat: "cat-anx", desc: "어떤 일을 마무리했음에도 여전히 찝찝함이 남아 마무리가 덜 된 듯한 상태", sit: "일을 확실히 처리하지 못했거나, 타인과의 관계에서 미묘한 앙금이 남았을 때", body: "머릿속에서 특정 생각이 맴돌며 시선이 불안정하게 흔들림", aff: "나는 현재의 불완전함을 수용하고, 필요한 만큼 최선을 다했음을 스스로 인정합니다." },
+            
+            { name: "답답하다", cat: "cat-ang", desc: "마음의 소통이나 행동의 자유가 해소되지 못하고 무언가에 꽉 막혀 있는 듯한 기분", sit: "말이 통하지 않거나 정체되어 있을 때", body: "가슴 한복판이 꽉 막힌 느낌과 목이 조이는 듯함", aff: "답답함은 변화를 원한다는 신호입니다." },
+            { name: "억울하다", cat: "cat-ang", desc: "공정함과 진실이 훼손되어 자신의 정당함이 무시당했을 때 느끼는 분노와 속상함", sit: "오해받거나 기여가 무시당했을 때", body: "눈시울이 뜨거워지고 이가 갈리며 주먹에 힘이 들어감", aff: "진실은 나를 지켜줄 것입니다." },
+            { name: "짜증나다", cat: "cat-ang", desc: "피로나 불편함이 누적되어 마음에 여유가 없고 신경이 날카롭게 곤두선 상태", sit: "피로가 쌓인 상태에서 소음을 겪을 때", body: "얼굴 근육이 팽팽해지고 목소리가 날카워지며 미간을 찌푸림", aff: "나는 감정의 주인이며 평온을 선택합니다." },
+            { name: "불쾌하다", cat: "cat-ang", desc: "무례한 행동이나 마음에 들지 않는 환경으로 인해 기분이 상하고 꺼림칙한 상태", sit: "무례한 행동을 목격하거나, 위생적이지 못한 환경에 처했을 때", body: "미간이 찌푸려지고 몸이 움츠러들며, 기운이 소모되는 느낌이 듦", aff: "불편한 원인을 살피고, 나를 보호하기 위해 적절한 거리를 둡니다." },
+            { name: "거슬린다", cat: "cat-ang", desc: "어떤 대상의 행동이나 상황, 소리 등이 마음에 들지 않아 계속 신경이 쓰이고 불편한 상태", sit: "반복적인 소음이 들리거나, 상대방의 눈치 없고 무례한 태도가 지속될 때", body: "시선이 자꾸 불쾌한 대상을 향하고 미간이 찌푸려지며, 신경이 곤두서서 예민해짐", aff: "외부의 자극이 나의 평온함을 빼앗도록 허락하지 않으며, 나는 자극에 휩쓸리지 않고 나의 일에 집중할 수 있습니다." },
+            { name: "언짢다", cat: "cat-ang", desc: "마음에 차지 않아 기분이 개운하지 않고 약간 불쾌하거나 섭섭한 상태", sit: "예의 없는 대우를 받거나, 기대와 달리 상황이 좋지 않게 흘러갈 때", body: "미간이 찌푸려지고 입술을 굳게 다물게 되며, 어깨와 몸이 경직됨", aff: "나는 불쾌한 상황 속에서도 내면의 중심을 지키며, 나의 평온함을 선택할 권리가 있습니다." },
+            { name: "화나다", cat: "cat-ang", desc: "어떤 일이나 대상 때문에 몹시 언짢고 불쾌하여 감정이 격앙된 상태", sit: "자신의 뜻대로 일이 풀리지 않거나, 누군가에게 부당한 대우를 받았을 때", body: "얼굴이 붉어지고 호흡이 가빠지며, 목소리가 커지거나 심장 박동이 빨라짐", aff: "감정은 자연스러운 반응이지만, 나는 화를 건설적인 방법으로 표현하고 해소할 수 있습니다." },
+            { name: "분하다", cat: "cat-ang", desc: "억울한 일을 당하거나 자신의 무력함을 느껴 화가 나고 속상한 상태", sit: "부당한 오해를 받거나, 최선을 다했음에도 외부 요인으로 인해 실패하여 억울할 때", body: "주먹을 꽉 쥐거나 입술을 깨물게 되며, 가슴이 답답하고 억눌린 울음이 터질 것 같음", aff: "이 억울함과 분노는 나를 보호하려는 마음에서 옵니다. 나는 이 에너지를 나를 발전시키는 원동력으로 바꿀 수 있습니다." },
+            { name: "증오하다", cat: "cat-ang", desc: "특정 대상에 대해 극심한 반감과 혐오를 느끼며 몹시 미워하는 상태", sit: "나나 내가 소중하게 여기는 것을 심각하게 해친 대상을 떠올리거나 마주쳤을 때", body: "대상을 향해 눈빛이 차가워지고 온몸의 근육이 경직되며, 속에서 끓어오르는 듯한 열기를 느낌", aff: "누군가를 미워하는 마음은 결국 나를 지치게 합니다. 나는 상대를 위해서가 아니라 나의 해방을 위해 마음의 짐을 내려놓습니다." },
+            { name: "격노하다", cat: "cat-ang", desc: "참을 수 없을 만큼 감정이 폭발하여 몹시 맹렬하게 화를 내는 상태", sit: "도저히 용납할 수 없는 배신을 당하거나, 나의 핵심 가치나 존엄성이 심각하게 짓밟혔을 때", body: "이성을 잃고 소리를 지르거나, 온몸이 부들부들 떨리고 호흡이 통제되지 않음", aff: "나는 폭풍처럼 몰아치는 감정 속에서도 잠시 멈춰 서서 호흡 고르고, 이성적인 판단력을 되찾을 수 있습니다." },
+            { name: "괘씸하다", cat: "cat-ang", desc: "상대방이 마땅히 지켜야 할 도리나 예의를 어겨 몹시 얄밉고 분개하는 상태", sit: "호의를 베풀었는데도 배신하거나, 믿었던 사람이 건방지고 무례하게 굴 때", body: "어이가 없어 헛웃음이 나고 혀를 차게 되며, 상대를 매섭게 쏘아보게 됨", aff: "타인의 예의 없는 행동은 그 사람의 문제일 뿐입니다. 나는 상대의 수준에 맞춰 반응하지 않고 나의 품위를 지킵니다." },
+            { name: "밉다", cat: "cat-ang", desc: "대상의 행동이나 태도가 원망스러워 정서적 거리감을 두고 싶어지는 거부감", sit: "진심을 무시한 상대가 떠오를 때", body: "입술을 굳게 다물게 되고 상대 쪽으로 고개를 돌리기 싫어짐", aff: "미움 대신 나를 아끼는 마음을 채웁니다." },
+            { name: "원망스럽다", cat: "cat-ang", desc: "자신이 겪는 고통이나 아픔의 원인을 대상에게 돌리며 한탄하는 아픈 마음", sit: "결정적 순간에 곁에 없었던 이에 대한 서운함", body: "가슴 깊은 곳이 쓰리고 명치 부근이 딱딱해짐", aff: "기대를 내려놓고 스스로를 돕습니다." },
+            { name: "질투하다", cat: "cat-ang", desc: "타인의 성취나 소유를 바라보며 자신의 내면적 결핍이 날카롭게 자극되는 시기심", sit: "타인의 성과를 축하하기 힘들 때", body: "속이 뒤틀리는 느낌과 함께 가슴이 서늘해짐", aff: "타인의 성취는 나의 가능성을 보여주는 거울입니다." },
+            { name: "불편하다", cat: "cat-ang", desc: "내면의 평온이 깨져 대상이나 자리를 지혜롭게 피하고 싶어지는 방어 상태", sit: "가치관이 맞지 않는 사람과 있을 때", body: "몸이 뻣뻣해지고 자꾸 자세를 바꾸게 되며 시선을 피함", aff: "나의 경계를 지키며 지혜롭게 지나갑니다." },
+            { name: "어색하다", cat: "cat-ang", desc: "서먹한 관계나 낯선 분위기 속에서 말과 행동이 부자연스럽고 굳어있는 상태", sit: "서먹한 이와 단둘이 남겨졌을 때", body: "손을 어디에 둘지 모르겠고 미소가 부자연스러움", aff: "어색함조차 과정입니다. 가벼운 미소를 지어봅니다." },
+            { name: "황당하다", cat: "cat-ang", desc: "상식적이지 않거나 비논리적인 일을 마주하여 어처구니가 없고 기가 막힌 상태", sit: "터무니없는 거짓말을 들었을 때", body: "입이 벌어지고 헛웃음이 나오며 힘이 탁 풀림", aff: "황당한 일에 소중한 감정을 쏟지 않습니다." },
+            { name: "어이없다", cat: "cat-ang", desc: "상황이나 타인의 무례함이 상식 선을 크게 넘어서 말문이 막히고 기가 차는 상태", sit: "상식 밖의 행동이나 도를 넘은 무례함을 목격했을 때", body: "순간적으로 머릿속이 하얘지고, 헛웃음이 나며 가슴이 답답해짐", aff: "어이없는 상황에 휘둘리기보다, 내 중심을 잡고 상황과 한 걸음 거리를 둡니다." },
+            { name: "속상하다", cat: "cat-ang", desc: "뜻대로 되지 않은 상황 속에서 슬픔과 화가 미묘하게 얽혀 마음이 아린 상태", sit: "가깝고 소중한 이가 나의 배려를 무시할 때", body: "코끝이 찡해지고 가슴 중앙이 아릿하게 저려옴", aff: "나는 존중받을 자격이 있습니다." },
+            
+            { name: "서운하다", cat: "cat-sad", desc: "기대했던 만큼의 관심이나 연결이 부족하여 마음에 씁쓸한 아쉬움이 남는 상태", sit: "특별한 날을 잊었거나 무관심할 때", body: "입꼬리가 처지고 가슴이 텅 빈 듯한 허전함이 느껴짐", aff: "서운함은 더 사랑받고 싶은 마음입니다." },
+            { name: "외롭다", cat: "cat-sad", desc: "세상이나 집단 속에서 누구에게도 온전히 이해받지 못한다고 느껴지는 쓸쓸함", sit: "군중 속이나 혼자 남겨진 밤", body: "팔다리가 차갑게 느껴지고 몸이 작아지는 듯한 오한", aff: "나는 나 자신과 먼저 친해지겠습니다." },
+            { name: "슬프다", cat: "cat-sad", desc: "소중한 존재나 가치를 잃어버린 상실의 아픔을 마음 가득 수용하고 정화하는 과정", sit: "이별이나 아픈 진실을 마주할 때", body: "눈시울이 뜨거워지고 온몸에 힘이 빠지며 가슴이 무거움", aff: "눈물은 상처 입은 마음을 씻어줍니다." },
+            { name: "쓸쓸하다", cat: "cat-sad", desc: "주위에 아무도 없는 듯한 고요함 속에서 느껴지는 서글프고 허전한 마음", sit: "혼자 방에 앉아 창밖을 보거나, 북적이는 거리에서 문득 혼자라는 생각이 들 때", body: "마음 한구석이 텅 빈 것 같고, 몸의 온기가 살짝 빠져나가는 듯한 공허함", aff: "잠시 멈추어 나의 내면을 돌보는 시간을 가지며, 이 고요함 속에서 나를 따뜻하게 안아줍니다."},
+            { name: "우울하다", cat: "cat-sad", desc: "마음의 에너지가 급격히 낮아져 매사에 의욕이 없고 침잠해 있는 무거운 상태", sit: "무력감이 지속되거나 단절된 느낌일 때", body: "눈꺼풀이 무겁고 온몸이 젖은 솜처럼 바닥으로 가라앉음", aff: "이 또한 날씨일 뿐입니다. 해는 뜹니다." },
+            { name: "무기력하다", cat: "cat-sad", desc: "누적된 번아웃이나 실패로 인해 아무것도 하고 싶지 않고 에너지가 바닥난 상태", sit: "반복된 실패나 번아웃이 왔을 때", body: "손가락 하나 까딱하기 싫고 목소리에 생기가 전혀 없음", aff: "지금은 뿌리를 내리는 쉼의 시간입니다." },
+            { name: "무력하다", cat: "cat-sad", desc: "내 힘으로는 도저히 현재의 상황을 바꿀 수 없다는 거대한 한계에 압도된 마음", sit: "반복되는 갈등 속에 해결책이 없을 때", body: "어깨가 축 처지고 심장 박동이 아주 느리고 약해짐", aff: "아무것도 하지 않아도 괜찮습니다." },
+            { name: "후회하다", cat: "cat-sad", desc: "과거에 했던 자신의 선택이나 행동에 아쉬움과 미련을 느끼며 스스로를 성찰함", sit: "기회를 놓쳤거나 상처를 주었을 때", body: "가슴을 치고 싶거나 머리를 감싸 쥐게 되며 속이 쓰림", aff: "과거의 실수에서 지혜를 배워 성장합니다." },
+            { name: "좌절하다", cat: "cat-sad", desc: "노력하던 목표가 무너지고 희망이 꺾여 다시 일어설 엄두가 나지 않는 아픈 상태", sit: "노력이 실패로 돌아가 엄두가 나지 않을 때", body: "무릎에 힘이 풀리고 가슴이 턱 막혀 숨쉬기가 힘듦", aff: "좌절은 멈춤이지 끝이 아닙니다." },
+            { name: "지루하다", cat: "cat-sad", desc: "현재 하는 행동에서 어떠한 흥미나 의미도 발견하지 못해 시간이 정체된 느낌", sit: "단조로운 일상이 반복될 때", body: "하품이 나오고 턱을 괴거나 몸을 비틀게 됨", aff: "지루함 속에 영감의 씨앗이 있습니다." },
+            { name: "피곤하다", cat: "cat-sad", desc: "신체적, 정신적 한계를 초과하여 몸이 강력하게 휴식을 요청하는 고갈 신호", sit: "쉼 없이 달려와 모든 의욕이 사라질 때", body: "머리를 무겁고 눈이 따가우며 뒷목이 뻣뻣함", aff: "고생한 나에게 깊은 휴식을 선물합니다." },
+            { name: "지친다", cat: "cat-sad", desc: "긴 시간 동안의 노력이나 갈등으로 인해 마음의 탄력을 잃고, 더 이상 버틸 에너지가 남아있지 않은 상태", sit: "해결되지 않는 문제를 계속 안고 있거나, 스스로에게 너무 엄격한 기준을 적용해왔을 때", body: "어깨가 무겁게 처지고 한숨이 잦아지며, 무표정이 익숙해지고 감각이 무뎌짐", aff: "충분히 애썼습니다. 이제는 아무것도 하지 않고 오롯이 나를 쉬게 할 때입니다." },
+            { name: "의욕이 없다", cat: "cat-sad", desc: "무언가를 시작하거나 성취하고 싶다는 내면의 동기가 완전히 사라져, 모든 일이 무의미하게 느껴지는 상태", sit: "번아웃이 오거나, 반복된 실패로 인해 미래에 대한 기대가 희미해졌을 때", body: "몸의 움직임이 느려지고 눈빛에 생기가 없으며, 시간의 흐름을 무감각하게 받아들임", aff: "지금의 멈춤은 더 멀리 나아가기 위한 뿌리 내림입니다. 조급해하지 않아도 괜찮습니다." },  
+            { name: "침울하다", cat: "cat-sad", desc: "걱정이나 근심에 잠겨서 마음이 우울한 상태", sit: "예기치 않은 실망스러운 소식을 듣거나, 깊은 상실감이나 후회에 잠겨 혼자만의 생각에 빠져들 때", body: "고개를 푹 숙이거나 한숨을 자주 쉬며, 주변의 밝은 자극이나 대화에 거의 반응하지 않고 굳어 있음", aff: "마음에 짙은 구름이 낀 것처럼 무거운 날도 있습니다. 이 감정이 지나가기를 억지로 서두르지 말고, 잠시 기대어 쉬어가도 괜찮습니다."},
+            { name: "부럽다", cat: "cat-sad", desc: "타인의 훌륭한 처지나 성취를 보며 자신의 감춰진 결핍이 자극되는 미묘한 마음", sit: "친구의 성공 소식을 보았을 때", body: "시선이 자꾸 아래로 향하고 가슴 한구석이 쿡쿡 쑤심", aff: "나에게는 나만의 고유한 행복이 이미 있습니다." },
+            { name: "괴롭다", cat: "cat-sad", desc: "신체적, 정신적 통증이나 고통이 극심하여 당장 그 상황에서 벗어나고픈 간절함", sit: "상처가 떠오르거나 현실이 힘들 때", body: "온몸의 근육이 뒤틀리는 듯하고 가슴이 찢어지는 통증", aff: "고통을 따뜻하게 안아주며 치유합니다." },
+            { name: "그리워하다", cat: "cat-sad", desc: "지금은 곁에 없는 소중한 대상과의 추억을 떠올리며 다시 연결되고 싶은 상태", sit: "이별한 이의 유품이나 흔적을 볼 때", body: "가슴 부근이 아련하게 저리고 목소리가 떨림", aff: "그리움은 내가 사랑했다는 증거입니다." },
+            { name: "실망하다", cat: "cat-sad", desc: "품었던 기대가 허무하게 무너지면서 상대에 대한 굳건한 신뢰가 흔들리는 상태", sit: "믿었던 이의 무심한 모습을 보았을 때", body: "몸에서 기운이 빠져나가며 입안이 마르는 느낌", aff: "실망은 환상이 걷힌 자리에 진실을 세우는 일입니다." },
+            { name: "자괴감이 든다", cat: "cat-sad", desc: "스스로의 기대치에 미치지 못한 자신의 모습이나 행동을 보며 겪는 깊은 부끄러움과 실망감", sit: "나의 실수가 반복되거나, 스스로에게 실망스러운 결정을 내렸을 때", body: "가슴 한쪽이 묵직하게 가라앉고 고개가 숙여지며 무기력함이 느껴짐", aff: "실수는 과정의 일부입니다. 나를 비난하기보다 있는 그대로의 나를 안아줍니다."},
+            { name: "서럽다", cat: "cat-sad", desc: "오해나 외로움 속에서 억울함과 슬픔이 제어할 수 없이 북받쳐 오르는 아픈 마음", sit: "혼자 아프거나 오해받을 때", body: "어깨를 떨며 흐느끼게 되고 가슴이 요동침", aff: "내 마음의 울음을 충분히 들어주겠습니다." },
+            { name: "안타깝다", cat: "cat-sad", desc: "상황을 좋게 개선해주고 싶으나 자신의 힘으로는 지켜볼 수밖에 없어 애가 타는 상태", sit: "도움을 주고 싶지만 지켜만 봐야 할 때", body: "손바닥을 비비거나 발을 동동 구르며 가슴이 타는 듯함", aff: "나의 기도가 작은 위로가 되길 바랍니다." },
+            { name: "아쉽다", cat: "cat-sad", desc: "바라던 바가 완벽히 채워지지 않고 무언가 미련이나 부족함이 남은 섭섭한 마음", sit: "조금만 더 노력했거나 기회가 있었다면 결과가 달랐을 때", body: "입술을 깨물거나 한숨을 깊게 쉬며 가슴 한구석이 허전함", aff: "다음에는 당신이 원하는 결과를 꼭 얻기를 응원합니다." },
+            { name: "허탈하다", cat: "cat-sad", desc: "쏟아부은 노력과 기대가 한순간에 수포로 돌아가 마음속에 큰 구멍이 뚫린 허전함", sit: "노력이 수포로 돌아갔을 때", body: "팔다리에 힘이 하나도 없고 가슴 속이 텅 빈 구멍 같음", aff: "비워진 마음을 인정하며 새로운 에너지를 기다립니다." }
+        ];
 
-        imageContainer.addEventListener('click', () => {
-            imageModal.style.display = 'flex';
-        });
-
-        const emotionData = {
-            "ecstasy": {
-                kor: "황홀", eng: "Ecstasy",
-                tags: ["강한 기쁨", "무아지경", "압도적 긍정"],
-                desc: "기쁨의 가장 강렬한 형태로, 이성이 마비되고 자아의 경계가 흐려질 만큼 압도적인 환희 상태를 의미합니다. 오시바 요시노부의 관점에서는 일상적인 만족을 넘어선, 영적이거나 심미적인 절정 경험과 닿아있는 감정어입니다.",
-                points: [
-                    "<b>신체적 반응:</b> 심장 박동의 급격한 증가, 호흡이 가빠짐, 눈물이 날 것 같은 벅차오름, 몸이 가벼워지는 듯한 감각.",
-                    "<b>발현 상황:</b> 오랜 염원의 극적인 성취, 압도적인 예술 작품이나 자연경관을 마주했을 때, 종교적/영적 체험.",
-                    "<b>행동 경향:</b> 외부 세계에 대한 경계심이 완전히 허물어지며, 현재의 순간에 완벽하게 몰입합니다."
-                ],
-                related_emotions: ["희열", "쾌감", "환희", "도취", "짜릿함", "벅참", "매료됨", "무아지경", "열광", "벅차오름", "감격", "황홀경", "엑스터시", "심취", "통쾌함"]
-            },
-            "joy": {
-                kor: "기쁨", eng: "Joy",
-                tags: ["기본 감정", "만족", "행복", "조절"],
-                desc: "<b>정의:</b> 자신의 욕구가 충족되었을 때 생기는 감정입니다. 만족감, 행복감, 유쾌함을 동반하며, 뇌의 보상 체계와 연동된 강력한 긍정적 에너지를 가집니다.",
-                points: [
-                    "<b>[기쁨의 신경과학적 기제]</b><br>좋은 일이 생기면 도파민과 베타엔도르핀이 분비되어 강렬한 '기쁨'을 느끼게 하고, 이후 세로토닌이 분비되면서 마음을 잔잔하고 충만한 '행복감'으로 채웁니다.",
-                    "<b>[건전한 기쁨의 선택]</b><br>도덕에 어긋나는 기쁨은 강렬한 자극과 일시적인 해방감을 주지만, 죄의식과 갈증만을 남길 뿐 진정한 행복으로 이어지지 않습니다.",
-                    "<b>[고양된 상태의 위험성]</b><br>기쁨이나 황홀감은 우리를 들뜨게 하여 현실 감각을 흐리게 합니다. 타인의 상황을 배려하지 않는 무심한 언행을 하거나 실수하지 않도록 주의가 필요합니다.",
-                    "<b>[현재에 머무는 의식]</b><br>들뜬 기분 속에서도 '지금, 여기'에 의식을 단단히 붙잡아 두어야 합니다.",
-                    "<b>[공유의 지혜]</b><br>기쁜 일을 나누는 지혜가 필요합니다. 기쁜 일을 나누는 것은 좋지만, 나의 행복이 누군가에게는 슬픔이나 굴욕감이 될 수 있음을 인지하는 배려가 진정한 기쁨의 공유입니다."
-                ],
-                related_emotions: ["즐거움", "반가움", "유쾌함", "흐뭇함", "명랑함", "쾌활함", "뿌듯함", "만족감", "행복함", "신남", "산뜻함", "환함", "기분좋음", "활기참", "싱그러움", "재미있음", "가뿐함"]
-            },
-            "serenity": {
-                kor: "평온", eng: "Serenity",
-                tags: ["약한 기쁨", "안정", "고요함"],
-                desc: "기쁨이 잔잔하게 가라앉은 상태로, 위협이나 결핍이 없는 상태에서 느끼는 심리적 안도와 고요함입니다. 들뜬 감정이라기보다는 내면의 잔잔한 호수와 같은 충만함을 나타내는 감정어입니다.",
-                points: [
-                    "<b>신체적 반응:</b> 호흡이 깊고 규칙적이며, 부교감신경이 활성화되어 맥박이 안정됩니다.",
-                    "<b>발현 상황:</b> 휴식 시간, 익숙하고 안전한 공간에 있을 때, 큰 고민거리가 해결된 직후의 일상.",
-                    "<b>행동 경향:</b> 외부 자극을 찾기보다 현재의 정적인 상태를 음미하며, 명상적이고 수용적인 태도를 취합니다."
-                ],
-                related_emotions: ["편안함", "여유로움", "차분함", "홀가분함", "안도감", "느긋함", "무던함", "잔잔함", "위안", "달관", "다행스러움", "평화로움", "안락함", "고요함", "나른함"]
-            },
-            "admiration": {
-                kor: "경애", eng: "Admiration",
-                tags: ["강한 신뢰", "존경", "동경"],
-                desc: "단순히 믿는 것을 넘어 상대를 우러러보고 존경하며 끌리는 강렬한 신뢰 상태입니다. 대상의 가치를 압도적으로 긍정하며, 자신을 기꺼이 낮추어 대상의 영향력을 수용하려는 심리가 내포되어 있습니다.",
-                points: [
-                    "<b>신체적 반응:</b> 대상을 향해 시선이 고정되고, 가슴이 벅차오르는 느낌, 동공 확장.",
-                    "<b>발현 상황:</b> 타인의 도덕적 성취나 압도적인 능력을 목격했을 때, 영웅적인 희생을 보았을 때.",
-                    "<b>행동 경향:</b> 대상을 모방하려 하거나, 그들의 철학이나 지시를 비판 없이 깊이 수용하고 따르려 합니다."
-                ],
-                related_emotions: ["존경", "우러러봄", "숭배", "맹신", "우상화", "심취", "감복", "감화", "찬사", "예찬", "매료"]
-            },
-            "trust": {
-                kor: "신뢰", eng: "Trust",
-                tags: ["기본 감정", "신용", "관계", "성장"],
-                desc: "<b>정의:</b> 특정한 사람이나 사물을 높이 평가하여 '모든 것을 맡길 수 있다'고 느끼는 마음입니다. 신뢰는 과거의 신용 축적과 현재의 평가, 미래에 대한 기대가 결합하여 형성되는 강력한 심리적 유대입니다.",
-                points: [
-                    "<b>[신용과 신뢰의 관계]</b><br>신용은 과거의 실적과 행동을 바탕으로 한 '객관적 평가'이며, 신뢰는 이를 토대로 형성되는 '주관적 평가'입니다.",
-                    "<b>[신뢰를 얻는 5대 요소]</b><br>성실함, 정직함, 언행일치, 본업에서의 능력, 책임 회피하지 않는 태도가 필수적입니다.",
-                    "<b>[견고한 관계의 근간]</b><br>신뢰가 바탕이 된 관계는 일시적인 의견 차이나 실수가 발생해도 근간이 흔들리지 않습니다.",
-                    "<b>[경애(敬愛)의 양면성과 함정]</b><br>신뢰가 극에 달한 상태인 '경애'는 맹목적인 복종으로 이어질 수 있으므로 주관적 판단을 잃지 말아야 합니다.",
-                    "<b>[기본적 신뢰감의 중요성]</b><br>타인과 자신을 믿지 못하는 것은 유아기의 기본적 신뢰감 형성 부족에서 기인할 수 있습니다."
-                ],
-                related_emotions: ["믿음", "의지함", "안심", "친밀감", "연대감", "소속감", "동료애", "공감", "지지", "호감", "애착", "든든함", "의존", "결속력", "친숙함"]
-            },
-            "acceptance": {
-                kor: "수용", eng: "Acceptance",
-                tags: ["약한 신뢰", "인정", "포용"],
-                desc: "신뢰의 가장 옅은 형태로, 사람이나 상황을 저항 없이 있는 그대로 받아들이는 태도입니다. 적극적인 호의라기보다는 '거부하지 않음'에 가까운 심리적 승인 상태를 뜻합니다.",
-                points: [
-                    "<b>신체적 반응:</b> 어깨의 힘이 빠지고, 고개를 끄덕이는 등 반사적인 긍정 신체 언어 발현.",
-                    "<b>발현 상황:</b> 피할 수 없는 현실을 마주했을 때, 나와 다른 타인의 가치관을 처음 이해하기 시작할 때.",
-                    "<b>행동 경향:</b> 논쟁을 멈추고 상황에 순응하며, 새로운 정보나 사람을 자신의 바운더리 안으로 들어오게 허락합니다."
-                ],
-                related_emotions: ["인정", "끄덕임", "포용", "관대함", "이해", "허용", "타협", "양보", "순응", "체념(받아들임)", "편견없음", "무비판"]
-            },
-            "terror": {
-                kor: "공포", eng: "Terror",
-                tags: ["강한 두려움", "패닉", "생존 위협"],
-                desc: "생존에 직각적인 위협이 다가왔을 때 이성적 판단이 불가능할 정도로 온몸을 장악하는 원초적인 감정입니다. 감정어 사전에서는 이성을 마비시키고 동물을 가장 본능적인 상태로 되돌리는 강력한 경고음으로 설명됩니다.",
-                points: [
-                    "<b>신체적 반응:</b> 극심한 교감신경계 활성화(심박수 폭증, 동공 최대 확장, 식은땀, 안면 창백, 괄약근 통제 상실 가능성).",
-                    "<b>발현 상황:</b> 목숨을 위협받는 재난, 맹수와의 조우, 치명적인 폭력에 노출되었을 때.",
-                    "<b>행동 경향:</b> 투쟁-도피-경직(Fight-Flight-Freeze) 반응 중 가장 극단적인 형태(예: 완전히 얼어붙어 소리조차 내지 못함)를 보입니다."
-                ],
-                related_emotions: ["경악", "섬뜩함", "오싹함", "패닉", "전율", "기겁", "혼비백산", "발작적 두려움", "소름", "극도의 경계", "아연실색"]
-            },
-            "fear": {
-                kor: "두려움", eng: "Fear",
-                tags: ["기본 감정", "미래 대응", "신체 반응", "자기 방어"],
-                desc: "<b>정의:</b> 소중한 무언가가 위협받고 있다고 느낄 때 생기는 감정입니다. 좋지 않은 미래에 대한 상상이 마음을 불안하게 하며, 판단과 행동에 직접적인 영향을 미칩니다.",
-                points: [
-                    "<b>[미래를 향한 경고음]</b><br>불안과 두려움은 미래를 상상할 때 발생합니다. 실제로 일어난 일이 아님에도 뇌는 이를 실재하는 위협으로 착각하여 고통을 느낍니다.",
-                    "<b>[뇌 기능의 제약]</b><br>불안 상태에서는 이성을 담당하는 전두엽 기능이 억제되므로 중요한 결정을 내리기보다 신중한 태도가 필요합니다.",
-                    "<b>[불안의 악순환 차단]</b><br>예기 불안으로 인한 신체 증상을 과도하게 해석하면 불안이 증폭되므로 객관적인 사실을 마주하는 훈련이 중요합니다.",
-                    "<b>[가치 있는 불안 vs 쓸모없는 불안]</b><br>위험에 대비하게 하는 '가치 있는 불안'은 즉각적인 방재 행동으로 해소하고, 왜곡된 '가치 없는 불안'은 원인을 객관화하여 걷어내야 합니다.",
-                    "<b>[본능적 방어 반응]</b><br>갑작스러운 공포는 이성보다 본능이 앞서는 생존 반응으로, 스트레스 호르몬을 분비해 투쟁 혹은 도피를 선택하게 합니다."
-                ],
-                related_emotions: ["겁", "무서움", "두려움", "당혹", "위축", "주눅", "아찔함", "떨림", "두근거림", "겁먹음", "기죽음", "움츠러듦"]
-            },
-            "apprehension": {
-                kor: "불안", eng: "Apprehension",
-                tags: ["약한 두려움", "예기 불안", "걱정"],
-                desc: "위험이 구체화되지는 않았으나 미래에 나쁜 일이 일어날지도 모른다는 예감에서 오는 약하지만 지속적인 두려움입니다. 대상이 불명확하며 내면의 상상과 예측에서 기인하는 경우가 많습니다.",
-                points: [
-                    "<b>신체적 반응:</b> 만성적인 어깨 뭉침, 얕고 빠른 호흡, 잦은 신경질적 움직임(다리 떨기, 손톱 물어뜯기).",
-                    "<b>발현 상황:</b> 불확실한 미래를 앞두고 있을 때, 중요한 평가를 기다릴 때.",
-                    "<b>행동 경향:</b> 일에 집중하지 못하고 계속해서 최악의 시나리오를 시뮬레이션하며, 과도한 정보 탐색(확인 강박)을 보입니다."
-                ],
-                related_emotions: ["걱정", "근심", "초조함", "긴장", "조바심", "꺼림칙함", "신경쓰임", "주저함", "망설임", "불안정", "노심초사", "찜찜함", "조심스러움"]
-            },
-            "amazement": {
-                kor: "경탄", eng: "Amazement",
-                tags: ["강한 놀람", "경악", "예측 붕괴"],
-                desc: "기존의 상식이나 인지 도식으로 완전히 설명할 수 없는 대상을 마주했을 때 뇌가 일시적으로 정지하는 듯한 강한 충격과 경이로움입니다. 이해의 범주를 넘어서는 압도적 놀라움을 의미합니다.",
-                points: [
-                    "<b>신체적 반응:</b> 입이 무의식적으로 크게 벌어지고, 호흡을 잠시 멈추며, 눈을 크게 부릅뜸.",
-                    "<b>발현 상황:</b> 기적적인 생존을 목격했을 때, 상상하지 못한 엄청난 기술이나 예술을 보았을 때.",
-                    "<b>행동 경향:</b> 순간적으로 마비되어 대상에서 눈을 떼지 못하고, 언어적 표현 능력을 상실하여 감탄사만 연발합니다."
-                ],
-                related_emotions: ["기막힘", "충격", "벙찜", "혼란", "말문막힘", "아찔함", "아연실색", "경천동지", "얼빠짐", "어이가없음"]
-            },
-            "surprise": {
-                kor: "놀람", eng: "Surprise",
-                tags: ["기본 감정", "충격", "증폭", "적응"],
-                desc: "<b>정의:</b> 예상치 못한 일을 마주했을 때 생기는 감정입니다. 그 자체로는 중립적이나, 마주한 사건의 의미에 따라 기쁨을 감동으로, 슬픔을 비탄으로 증폭시키는 '감정의 촉매제' 역할을 합니다.",
-                points: [
-                    "<b>[놀람의 두 가지 유형]</b><br>반사적으로 몸을 피하는 '본능적인 반응'과 경험·지식의 범위를 벗어난 일을 마주했을 때 일어나는 '지적인 반응'이 있습니다.",
-                    "<b>[감정 증폭 효과]</b><br>놀람은 원래의 감정을 더 크게 만듭니다. 나쁜 소식에는 암시를 주어 놀람의 강도를 완화함으로써 충격을 줄이는 지혜가 필요합니다.",
-                    "<b>[놀람 직후의 신중함]</b><br>놀람은 심리적 충격으로 판단력을 일시적으로 흐리게 합니다. 당황하여 엉뚱한 말이나 행동을 하지 않도록 심호흡을 하여 이성을 회복해야 합니다.",
-                    "<b>[급성 스트레스 반응]</b><br>충격적인 사건은 경악을 동반해 심리적 손상을 입힙니다. 불면증, 불안 등의 증상이 나타난다면 빠른 전문가의 돌봄을 받아야 합니다.",
-                    "<b>[리얼리티 쇼크에 대한 대응]</b><br>이상과 현실의 괴리로 오는 경악 상태를 방치하면 의욕을 상실하므로 적극적인 선택을 통해 상황을 통제해야 합니다."
-                ],
-                related_emotions: ["어리둥절", "당황", "신기함", "호기심", "의아함", "낯섦", "깜짝놀람", "놀라워함", "기상천외함", "신비로움"]
-            },
-            "distraction": {
-                kor: "동요", eng: "Distraction",
-                tags: ["약한 놀람", "산만함", "집중 저하"],
-                desc: "크게 놀란 것은 아니지만 예상치 못한 미세한 자극들이 산발적으로 주어져 주의 집중이 흩어지고 마음이 어수선해지는 상태입니다. 감정적 초점이 하나로 모이지 못하는 산만한 심리 상태를 나타냅니다.",
-                points: [
-                    "<b>신체적 반응:</b> 시선이 한곳에 머물지 못하고 계속 이동, 소소한 꼼지락거림.",
-                    "<b>발현 상황:</b> 주변이 소란스러울 때, 한 번에 여러 가지 새로운 정보나 알림이 쏟아질 때.",
-                    "<b>행동 경향:</b> 하나의 과제에 몰두하지 못하고 주변의 사소한 변화에 계속해서 반응하며 주의를 돌립니다."
-                ],
-                related_emotions: ["어수선함", "갈피를못잡음", "멍함", "두리번거림", "집중안됨", "산만함", "혼미함", "붕뜬기분"]
-            },
-            "grief": {
-                kor: "비탄", eng: "Grief",
-                tags: ["강한 슬픔", "애도", "상실의 고통"],
-                desc: "자아의 일부분이라고 느낄 만큼 소중한 대상을 영원히 상실했을 때 겪는 찢어지는 듯한 고통입니다. 존재의 기반이 흔들리는 심리적 외상 상태로, 회복에 오랜 애도의 시간이 필요합니다.",
-                points: [
-                    "<b>신체적 반응:</b> 가슴이 짓눌리는 듯한 통증, 호흡 곤란, 주체할 수 없는 오열, 식욕과 수면욕의 완전한 상실.",
-                    "<b>발현 상황:</b> 사랑하는 사람의 죽음, 평생을 바친 꿈의 완전한 좌절.",
-                    "<b>행동 경향:</b> 세상으로부터 자신을 철저히 고립시키고, 상실한 대상에 대한 기억에 집착하며 극도의 무기력에 빠집니다."
-                ],
-                related_emotions: ["절망", "비참함", "참담함", "애통", "통한", "오열", "단장", "참척", "비애", "원통함", "극도의 좌절감"]
-            },
-            "sadness": {
-                kor: "슬픔", eng: "Sadness",
-                tags: ["기본 감정", "상실", "치유", "성장"],
-                desc: "<b>정의:</b> 소중한 것을 잃었을 때 생겨나는 감정입니다. 상실감, 무력감, 좌절감 등을 포함하며, 다른 감정으로 변질되거나 전환되기 쉬운 복합적인 성질을 지닙니다.",
-                points: [
-                    "<b>[신체적 이상 증상 체크]</b><br>슬픔을 방치하면 가슴 통증, 호흡 곤란, 식욕 저하, 무기력증 등 신체적 고통으로 나타납니다. 증상이 지속되면 전문가의 도움이 필요합니다.",
-                    "<b>[슬픔의 전이와 악순환]</b><br>비탄을 억누르면 짜증, 분노, 격노와 같은 2차 감정으로 변질되거나 우울증으로 이어질 수 있습니다.",
-                    "<b>[눈물의 치유 효능]</b><br>슬플 때 눈물을 흘리면 뇌에서 세로토닌과 엔도르핀이 분비되어 마음을 안정시킵니다. 참지 말고 충분히 우는 것이 자연스러운 치유의 시작입니다.",
-                    "<b>[비탄의 12단계 과정]</b><br>슬픔은 충격부터 체념, 희망, 회복으로 이어지는 과정을 거칩니다. 이는 성장을 위한 필수적인 단계입니다.",
-                    "<b>[슬픔을 다스리는 법]</b><br>마음속 생각을 글로 써서 정리하거나 믿을 수 있는 사람에게 털어놓고 감정을 안전하게 배출하는 것이 중요합니다."
-                ],
-                related_emotions: ["고독", "외로움", "서러움", "눈물겨움", "허탈함", "상실감", "마음아픔", "애달픔", "처량함", "가슴시림", "가엾음"]
-            },
-            "pensiveness": {
-                kor: "감상적", eng: "Pensiveness",
-                tags: ["약한 슬픔", "사색", "아련함"],
-                desc: "격렬한 고통이 동반되지 않는 차분하고 옅은 슬픔으로, 향수나 사색과 결합된 감정입니다. 멜랑콜리한 기분 속에서 자기 성찰이나 예술적 영감으로 승화되기 쉬운 상태를 일컫습니다.",
-                points: [
-                    "<b>신체적 반응:</b> 시선을 아래로 깔거나 허공을 응시, 한숨, 조용한 몸짓.",
-                    "<b>발현 상황:</b> 과거의 추억이 담긴 물건을 보았을 때, 비 오는 날 혼자 있을 때, 일과가 끝난 조용한 저녁.",
-                    "<b>행동 경향:</b> 과거를 회상하고 일기나 글을 쓰거나, 서정적인 음악을 찾으며 내면의 목소리에 귀를 기울입니다."
-                ],
-                related_emotions: ["서운함", "아쉬움", "쓸쓸함", "헛헛함", "울적함", "센티멘탈", "적적함", "싱숭생숭", "처연함", "침울함", "의기소침", "우수에젖음"]
-            },
-            "loathing": {
-                kor: "증오", eng: "Loathing",
-                tags: ["강한 혐오", "적대감", "파괴 욕구"],
-                desc: "단순히 피하고 싶은 것을 넘어, 대상의 존재 자체가 자신의 가치나 생존에 지독한 오염을 일으킨다고 믿어 적극적으로 배척하고 파괴하고 싶어 하는 깊은 적대감입니다.",
-                points: [
-                    "<b>신체적 반응:</b> 구역질을 동반한 치밀어 오름, 미간을 심하게 찌푸림, 호흡이 거칠어짐.",
-                    "<b>발현 상황:</b> 자신의 핵심 가치관을 처참하게 유린하는 대상을 마주했을 때, 극악무도한 범죄를 접했을 때.",
-                    "<b>행동 경향:</b> 대상에 대한 철저한 배척, 저주, 혹은 적극적으로 대상을 억압하고 제거하려는 언어적/물리적 공격성을 보일 수 있습니다."
-                ],
-                related_emotions: ["역겨움", "진절머리", "구역질", "넌더리", "경멸", "환멸", "혐오감", "끔찍함", "적개심", "소름끼침", "치가떨림"]
-            },
-            "disgust": {
-                kor: "혐오", eng: "Disgust",
-                tags: ["기본 감정", "자기 방어", "호불호", "다양성"],
-                desc: "<b>정의:</b> 특정 상황, 사람, 사물에 대해 '싫다', '마음에 들지 않는다'라고 느끼는 불쾌한 감정입니다. 자신을 지키고 불쾌한 경험을 피하려는 자연스러운 자기방어 반응입니다.",
-                points: [
-                    "<b>[혐오의 본질]</b><br>혐오는 무의식중에 판단 기준을 왜곡합니다. 마음에 혐오가 있으면 상대의 말과 행동을 있는 그대로 받아들이지 못하고 관계의 악순환에 빠집니다.",
-                    "<b>[호불호가 판단에 미치는 영향]</b><br>같은 행동이라도 좋아하는 사람과 싫어하는 사람에게 다르게 느껴집니다. 평가를 합리화하고 있지는 않은지 돌아보아야 합니다.",
-                    "<b>[혐오의 원인 분석 연습]</b><br>'나는 왜 그 사람이 싫을까?'를 깊이 들여다보며 원인이 내 안의 열등감이나 경쟁심은 아닌지 마주하는 것이 개선의 시작입니다.",
-                    "<b>[사람을 미워하지 않는 기술: 라벨 바꾸기]</b><br>부정적인 인상을 긍정적인 언어로 재정의('고집이 세다' → '원칙이 있다')하면 혐오감이 눈에 띄게 누그러집니다.",
-                    "<b>[다양성 수용]</b><br>나와 타인은 성향과 가치관이 다를 수밖에 없음을 인정하고 차이를 흥미롭게 받아들이는 태도가 필요합니다."
-                ],
-                related_emotions: ["불쾌함", "거부감", "찝찝함", "불만족", "불호", "반감", "꺼림칙함", "미움", "얄미움", "눈에거슬림"]
-            },
-            "boredom": {
-                kor: "권태", eng: "Boredom",
-                tags: ["약한 혐오", "지루함", "의미 상실"],
-                desc: "혐오의 가장 약한 형태로, 현재 마주한 대상이나 상황이 자신에게 아무런 의미나 영양가(자극)를 주지 못하여 정신적으로 '소화하기 싫은' 무기력하고 회피적인 상태를 의미합니다.",
-                points: [
-                    "<b>신체적 반응:</b> 턱을 괴고 몸이 늘어짐, 잦은 하품, 눈에 초점이 없음.",
-                    "<b>발현 상황:</b> 반복적이고 단조로운 업무를 할 때, 전혀 관심 없는 주제의 대화를 들어야 할 때.",
-                    "<b>행동 경향:</b> 현재 상황에서 빨리 벗어나고 싶어 하며, 무의미한 낙서를 하거나 스마트폰을 보는 등 다른 자극을 찾아 헤맵니다."
-                ],
-                related_emotions: ["무관심", "심드렁함", "권태", "따분함", "시큰둥함", "귀찮음", "식상함", "흥미없음", "나태함"]
-            },
-            "rage": {
-                kor: "격노", eng: "Rage",
-                tags: ["강한 분노", "폭발", "통제 상실"],
-                desc: "분노가 한계치를 초과하여 이성적인 통제력을 완전히 상실한 폭발적인 감정 상태입니다. 상황이나 대상을 압도적인 힘으로 파괴하고자 하는 맹목적인 적대성이 표출됩니다.",
-                points: [
-                    "<b>신체적 반응:</b> 혈압 급상승, 안면 홍조, 목에 핏대가 섬, 주먹을 강하게 쥐고 몸이 부들부들 떨림.",
-                    "<b>발현 상황:</b> 극심한 부당함을 연이어 겪었을 때, 자신의 생존이나 자존감이 극도로 침해당했을 때.",
-                    "<b>행동 경향:</b> 고함을 지르거나 물건을 부수고, 언어적/물리적 폭력을 행사하는 등 결과를 생각하지 않는 파괴적 행동을 보입니다."
-                ],
-                related_emotions: ["분개", "분통", "울화", "극대노", "격분", "적개심", "악의", "살기", "광분", "노발대발", "길길이뜀", "통분"]
-            },
-            "anger": {
-                kor: "분노", eng: "Anger",
-                tags: ["기본 감정", "경고", "방어 기제", "투쟁"],
-                desc: "<b>정의:</b> 소중한 것이 위협받았을 때 생기는 경고 감정입니다. 위험 상황을 인식하게 하고, 소중한 것을 지키기 위한 행동으로 이끌어주는 역할을 합니다.",
-                points: [
-                    "<b>[분노의 핵심 가치]</b><br>가치 있는 감정이지만 동시에 파괴적이므로 의식적인 관리가 필요합니다.",
-                    "<b>[주의해야 할 반응 패턴]</b><br>침묵, 거친 태도, 비난과 공격, 잘못된 해소(술 등)는 문제 본질을 해결하지 못하며 관계를 무너뜨립니다.",
-                    "<b>[침해당하면 분노하는 '소중한 것']</b><br>자존심, 물질, 꿈, 정의, 시간, 관계 등 자신이 무엇을 침해당했을 때 분노하는지 성향을 파악해 보세요.",
-                    "<b>[분노의 다층성과 방어 기제]</b><br>분노는 흔히 '두려움'이나 '슬픔' 같은 1차 감정이 둔갑한 것일 수 있으니 진짜 원인이 무엇인지 내면을 들여다보아야 합니다.",
-                    "<b>[방치 시 위험성]</b><br>분노를 방치하면 '울분'이나 '원망'으로 고착화되며, 내향적 분노는 우울증으로 이어질 수 있습니다."
-                ],
-                related_emotions: ["화", "노여움", "억울함", "답답함", "부아", "약오름", "시기", "질투", "야속함", "속상함", "원망", "괘씸함", "부당함"]
-            },
-            "annoyance": {
-                kor: "짜증", eng: "Annoyance",
-                tags: ["약한 분노", "불쾌감", "마찰"],
-                desc: "심각한 위협은 아니지만, 자신의 일상적인 흐름이나 심리적 편안함을 자잘하게 방해하는 요소들에 대해 느끼는 가벼운 저항감과 불쾌감입니다.",
-                points: [
-                    "<b>신체적 반응:</b> 혀를 차거나 미간을 가볍게 찌푸림, 짧고 날카로운 호흡.",
-                    "<b>발현 상황:</b> 덥고 습한 날씨, 길을 걷다 계속 장애물에 걸릴 때, 누군가 약속 시간에 늦을 때.",
-                    "<b>행동 경향:</b> 불평이나 투덜거림을 표출하며, 방해 요소를 신경질적으로 치워버리려 합니다."
-                ],
-                related_emotions: ["신경질", "불만", "투덜거림", "성가심", "언짢음", "삐침", "심통", "뾰로통함", "거슬림", "투정"]
-            },
-            "vigilance": {
-                kor: "경계", eng: "Vigilance",
-                tags: ["강한 기대", "주시", "초집중"],
-                desc: "외부 환경에서 일어날 변화에 대비하여 감각 기관을 극도로 예민하게 세우고 모든 주의를 기울이는 상태입니다. 긍정적이라기보다 미래의 불확실성에 대한 강한 대비 태세에 가깝습니다.",
-                points: [
-                    "<b>신체적 반응:</b> 전신 근육 긴장, 시선이 고정되며 깜빡임이 줄어듦, 작은 소리에도 반응할 준비.",
-                    "<b>발현 상황:</b> 위험한 밤길을 걸을 때, 매우 중요한 시험이나 인터뷰 직전 상황 파악을 할 때.",
-                    "<b>행동 경향:</b> 불필요한 행동을 최소화하고 상황의 아주 작은 변화나 단서까지 포착하려 감각을 곤두세웁니다."
-                ],
-                related_emotions: ["갈망", "열망", "야망", "조바심", "욕구", "집착", "탐욕", "예민한 주시", "과도한 몰입", "맹목적 기대", "벼름"]
-            },
-            "anticipation": {
-                kor: "기대", eng: "Anticipation",
-                tags: ["기본 감정", "미래 지향", "리스크 대응", "성공 리허설"],
-                desc: "<b>정의:</b> 의식을 미래로 향했을 때 생겨나는 감정입니다. 바람직한 미래를 현실화하려는 능동적인 성질을 지니며, 어떤 미래를 그리느냐에 따라 불안과 기대라는 양면성을 가집니다.",
-                points: [
-                    "<b>[미래를 향한 근본 감정]</b><br>예기는 놀람(상상치 못한 일)의 반대편에 있는 감정으로, 상상한 일에 반응합니다. 비교적 조절하기 쉬우며 긍정적인 행동을 유도할 수 있습니다.",
-                    "<b>[감정의 강도와 몰입]</b><br>예기의 강도가 약하면 '관심', 강해지면 '경계'로 변화합니다.",
-                    "<b>[리스크 대응의 전략]</b><br>부정적인 예기(불안, 걱정)가 발생한다면 이를 리스크 대응의 신호로 삼고 대비하세요.",
-                    "<b>[성공 이미지 트레이닝]</b><br>긍정적인 시나리오를 생생하게 상상하는 '성공 리허설'은 미래를 위한 예행연습이자 의욕과 용기를 주는 동력이 됩니다.",
-                    "<b>[경계심이 유발하는 주의점]</b><br>미래에 너무 사로잡혀 부정적인 상상을 과장하지 않도록 현재 이 순간의 과제에 의식을 고정하는 연습이 필요합니다."
-                ],
-                related_emotions: ["희망", "고대", "설렘", "바램", "소망", "의욕", "투지", "다짐", "기다림", "목표의식", "예감"]
-            },
-            "interest": {
-                kor: "관심", eng: "Interest",
-                tags: ["약한 기대", "호기심", "주의 향함"],
-                desc: "새롭거나 특이한 대상에 대해 자연스럽게 마음이 끌리고 더 알아보고 싶어 하는 가벼운 지적, 심리적 갈증 상태입니다. 배움과 관계 형성의 가장 기초적인 출발점입니다.",
-                points: [
-                    "<b>신체적 반응:</b> 고개가 대상 쪽으로 약간 돌아감, 귀를 기울이는 제스처.",
-                    "<b>발현 상황:</b> 흥미로운 뉴스나 가십을 들었을 때, 매력적인 디자인의 물건을 발견했을 때.",
-                    "<b>행동 경향:</b> 대상을 자세히 관찰하고 질문을 던지며 가벼운 접근과 탐색을 시도합니다."
-                ],
-                related_emotions: ["호기심", "끌림", "눈길이감", "흥미", "유심함", "신경쓰임", "예의주시"]
-            },
-
-            /* 1차 혼합 감정 */
-            "optimism": {
-                kor: "낙관", eng: "Optimism",
-                tags: ["혼합 감정", "기쁨 + 예기", "미래 지향"],
-                desc: "<b>정의:</b> 바람직한 미래가 실현될 것이라는 긍정적인 전망을 믿으며 편안한 상태를 유지하는 마음입니다.<br><b>구성요소</b>:<br>기쁨: 욕구가 충족되어 만족스러운 감정<br>예기: 미래를 기대하는 마음",
-                points:[
-                    "<b>낙관의 긍정적 측면</b>: 도전을 두려워하지 않고 극복을 위한 능동적 행동을 취하게 합니다.",
-                    "<b>낙관과 비관의 균형</b>: 지나친 낙관은 계획 오류를 유발할 수 있으므로, 혁신과 의욕에는 낙관을, 리스크 대비에는 비관을 적절히 조화시켜야 합니다.",
-                    "<b>낙관성을 키우는 훈련</b>: 비관적 생각의 근본 원인을 찾아내고, 성공 시나리오를 떠올리는 훈련을 통해 사고 습관을 교정합니다."
-                ],
-                related_emotions: ["낙관", "긍정", "기대감에부푼", "전도유망함", "확신", "자신감", "당당함"]
-            },
-            "aggressiveness": {
-                kor: "공격성", eng: "Aggressiveness",
-                tags: ["혼합 감정", "예기 + 분노", "투쟁 의지"],
-                desc: "<b>정의:</b> 자신에게 소중한 것이 위협당하고 있다고 느낄 때, 그것을 지키기 위해 강한 투쟁 의지가 솟아나는 상태를 말합니다.<br><b>구성요소</b>:<br>예기: 미래를 기대하는 마음(위기 인식)<br>분노: 소중한 것이 위협당해 흥분한 감정",
-                points:[
-                    "<b>공격성의 재해석</b>: 중요한 가치를 지키기 위해 발생하는 반응으로, 이성적인 판단과 함께 활용될 때 큰 추진력이 됩니다.",
-                    "<b>공격성을 생성하는 방법</b>: 이 시련을 극복하지 못했을 때 잃게 될 소중한 것을 떠올려 분노를 품음으로써 스스로 투쟁심을 끌어올릴 수 있습니다.",
-                    "<b>지양해야 할 소통</b>: 인신공격이나 자기중심적 표현은 공격성을 파괴적으로 표출하는 것이므로 지양해야 합니다."
-                ],
-                related_emotions: ["공격성", "투쟁심", "복수심", "오기", "독기", "반항심", "반발심"]
-            },
-            "contempt": {
-                kor: "경멸", eng: "Contempt",
-                tags: ["혼합 감정", "혐오 + 분노", "가치 평가"],
-                desc: "<b>정의:</b> 어떤 대상을 ‘인정할 수 없다’, ‘가치가 낮다’라고 여기면서 깔보는 감정입니다.<br><b>구성요소</b>:<br>분노: 소중한 것이 위협받았을 때의 흥분된 감정<br>혐오: 불쾌하다고 느끼며 싫어하는 감정",
-                points:[
-                    "<b>경멸의 주관성</b>: 객관적 정의감이 아닌 개인의 가치관과 선입견에서 비롯되므로 멈추어 생각하는 태도가 필요합니다.",
-                    "<b>심리적 이면 분석</b>: 타인을 깔봄으로써 자신의 부족한 자신감이나 불안을 보상받으려는 우월 욕구가 핵심 동기인 경우가 많습니다.",
-                    "<b>자기 경멸의 극복</b>: 자신의 가능성을 가로막는 방어기제이므로 비하의 언어를 멈추고 자존감을 회복해야 합니다."
-                ],
-                related_emotions: ["경멸", "조소", "비웃음", "냉소", "적대감", "깔봄", "무시함", "하대"]
-            },
-            "remorse": {
-                kor: "후회", eng: "Remorse",
-                tags: ["혼합 감정", "슬픔 + 혐오", "과거 지향"],
-                desc: "<b>정의:</b> 과거의 결정이나 행동이 원인이 되어 안타까운 결과가 되었다는 사실을 인식하고, 그 과거를 슬퍼하며 자신이 얻지 못한 것에 애석해하는 감정입니다.<br><b>구성요소</b>:<br>슬픔: 소중한 것을 잃은 고통스러운 마음<br>혐오: 불쾌하다고 느끼며 싫어하는 감정",
-                points:[
-                    "<b>후회의 성찰적 활용</b>: 과거는 바꿀 수 없다는 것을 받아들이고 교훈만 얻은 뒤 현재에 집중해야 합니다.",
-                    "<b>적극적인 후속 조치</b>: 실수로 타인에게 영향을 주었다면 진심 어린 사과와 수습을 통해 대처하는 것이 유일한 만회 방법입니다.",
-                    "<b>예기적 후회 활용</b>: 중요한 결정 앞에서 미래의 시점에서 어떻게 생각할지 질문함으로써 올바른 선택을 내리는 용기를 얻을 수 있습니다."
-                ],
-                related_emotions: ["후회", "자책", "회한", "죄책감", "수치심", "부끄러움", "자기혐오", "모멸감"]
-            },
-            "disapproval": {
-                kor: "실망", eng: "disapproval",
-                tags: ["혼합 감정", "놀람 + 슬픔", "기대 수용"],
-                desc: "<b>정의:</b> 사람이나 일에 대해 품고 있던 기대가 무너졌을 때, 슬픔을 느끼며 그 상황을 거부하는 마음을 말합니다.<br><b>구성요소</b>:<br>슬픔: 소중한 것을 잃은 고통스러운 감정<br>놀람: 예상치 못한 일에 충격을 받은 감정",
-                points:[
-                    "<b>기대와 실망의 상관관계</b>: 실망은 기대에서 시작되나, 기대를 품는 것 자체가 발전의 원동력이 되기도 합니다.",
-                    "<b>자기중심적 기대 경계</b>: 타인에게 느끼는 실망은 자신의 일방적인 기대를 상대가 충족해주지 못할 때 주로 발생하므로 명확한 소통이 필요합니다.",
-                    "<b>자책을 성장의 밑거름으로</b>: 기대가 무너졌을 때 이성적으로 숙고하여 실패를 성장의 기회로 바꾸어야 합니다."
-                ],
-                related_emotions: ["실망", "맥빠짐", "허무함", "배신감", "기대이하", "황망함"]
-            },
-            "awe": {
-                kor: "외경", eng: "Awe",
-                tags: ["혼합 감정", "놀람 + 두려움", "경외심"],
-                desc: "<b>정의:</b> 자신으로서는 도저히 맞설 수 없는 존재에게 압도되어 두려움에 떠는 감정입니다. 대상을 위대하게 여기고 경외하는 마음이 담겨 있습니다.<br><b>구성요소</b>:<br>놀람: 예상치 못한 일에 충격을 받는 감정<br>두려움: 자신이 위협받고 있다는 불안한 감정",
-                points:[
-                    "<b>두려움 이상의 존경</b>: 단순한 두려움을 넘어 대상의 위대함을 인정하고 그 앞에서의 겸손함이 포함된 숭고한 감정입니다.",
-                    "<b>복종으로의 함정 경계</b>: 특정 인물에게 외경을 느낄 경우 자유 의지를 포기하고 맹목적으로 따를 위험이 있으므로 주의가 필요합니다.",
-                    "<b>성찰적 태도 유지</b>: 감정의 고양을 즐기되 자신의 판단 기준을 잃지 않는 것이 건강한 경외의 태도입니다."
-                ],
-                related_emotions: ["경외감", "위압감", "얼어붙음", "깜짝놀라겁먹음", "패닉"]
-            },
-            "submission": {
-                kor: "복종", eng: "Submission",
-                tags: ["혼합 감정", "신뢰 + 두려움", "권위 수용"],
-                desc: "<b>정의:</b> 스스로 맞설 수 없는 ‘신뢰할 수 있는 존재’를 온전히 수용하고 따르며, 자신의 모든 것을 헌신하고자 하는 감정입니다.<br><b>구성요소</b>:<br>두려움: 자신이 위협받고 있다는 불안한 감정<br>신뢰: 상대를 높이 평가하며 모든 것을 맡길 수 있는 감정",
-                points:[
-                    "<b>복종의 긍정적 측면</b>: 경험이 부족할 때 경험 많은 존재의 판단을 따르면 시행착오를 줄이고 성장의 기본기를 다질 수 있습니다.",
-                    "<b>현명한 질문</b>: 부당하거나 저항감이 드는 지시를 받았을 때는 의도나 세부 사항을 묻고 이해하려는 노력이 필요합니다.",
-                    "<b>현명한 불복종</b>: 조직의 이익이나 더 소중한 가치를 위해 위험 상황에서는 지시를 거스르는 현명한 불복종을 늘 염두에 두어야 합니다."
-                ],
-                related_emotions: ["복종", "순응", "주눅듦", "굴복", "비굴함", "수동성"]
-            },
-            "love": {
-                kor: "사랑", eng: "Love",
-                tags: ["혼합 감정", "신뢰 + 기쁨", "관계"],
-                desc: "<b>정의:</b> 상대에게 호감을 느끼고 깊이 아끼는 감정입니다. 상대의 모든 것을 받아들이고 자신의 모든 것을 맡길 수 있는 마음 상태를 말합니다.<br><b>구성요소</b>:<br>신뢰: 상대를 높이 평가하며 모든 것을 맡길 수 있는 마음<br>기쁨: 욕구가 충족되어 만족감을 느끼는 마음",
-                points: [
-                    "<b>사랑의 기초, 신뢰</b>: 사랑은 다양한 관계 속에서 싹트지만 그 밑바탕은 언제나 신뢰입니다. 신뢰가 깨지면 사랑도 무너집니다.",
-                    "<b>연애의 양면성과 모순</b>: 연애 감정은 강한 집착과 독점욕을 수반하여 기쁨과 분노 등 모순된 감정을 동시에 품기 쉽습니다.",
-                    "<b>사랑의 근원적 가치</b>: 사랑은 인간에게 존재 이유를 제시하고 살아갈 에너지를 주는 가장 강력한 근원적 힘입니다."
-                ],
-                related_emotions: ["사랑", "애정", "우정", "헌신", "자애로움", "아낌", "온정", "로맨틱", "다정함"]
-            },     
-
-            /* 2차 / 3차 복합 감정 */
-            "hope": {
-                "name": "동경 (Longing / Yearning)",
-                "core_definition": "자신이 이상적으로 여기는 대상(인물, 일, 사물)에 마음이 강하게 끌리며, 그 대상과 자신을 동일시하거나 같은 이상을 실현하고자 하는 복합적 감정.",
-                "emotional_constituents": ["예기", "기쁨", "신뢰", "놀람"],
-                "attributes": {
-                    "nature": "수용적인 기다림과 성장을 향한 능동적 모방의 결합",
-                    "function": "이상 실현을 위한 롤모델 설정 및 회복 탄력성 강화",
-                    "sensitivity": "복합 감정으로 구성되어 있어 질투나 증오로 쉽게 변질될 수 있음"
-                },
-                "developmental_process": {
-                    "initiation": "대상과의 동일시를 통한 황홀경과 만족감",
-                    "growth_mechanisms": {
-                        "contrast_emotion": "자신의 부족함을 인식하는 계기",
-                        "imitation_desire": "본질적 특성(내면의 태도, 가치관)을 습득하려는 노력"
-                    }
-                },
-                "risk_management": {
-                    "warning": "이상 실현이 배신당할 경우 혐오나 증오로 반전 가능",
-                    "solution": "자기반성적 시각 견지 ('완벽한 사람은 없다', '본질적 본받기')",
-                    "differentiation": {
-                        "with_jealousy": {
-                            "longing": "나를 끌어올려 격차를 좁히는 발전적 방식",
-                            "jealousy": "상대를 끌어내려 격차를 좁히려는 파괴적 방식"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["찬사", "선망", "지망", "염원", "바람", "꿈"],
-                    "antonyms": ["질투", "경멸", "환멸", "멸시", "업신여김"]
-                }
-            },
-            "jealousy": {
-                "name": "질투 (Jealousy)",
-                "core_definition": "자신의 이상이나 욕구를 실현한 타인에게 느끼는 적대적인 감정으로, 박탈감과 자기 비하가 분노로 표출되는 상태.",
-                "emotional_constituents": ["불안", "두려움", "분노", "적대감"],
-                "attributes": {
-                    "nature": "본능적인 자기 방어와 사회적 비교가 결합된 파괴적 에너지",
-                    "function": "상대를 깎아내림으로써 심리적 불균형 해소 시도",
-                    "sensitivity": "상대가 심리적으로 가깝거나 관련 영역일수록 강하게 발현됨"
-                },
-                "developmental_process": {
-                    "initiation": "타인과의 격차 확인으로 인한 박탈감과 불쾌감",
-                    "growth_mechanisms": {
-                        "contrast_emotion": "자신의 가치를 낮게 평가하게 되는 계기",
-                        "imitation_desire": "공격적 비난을 통해 상대의 성취를 폄하하려는 노력"
-                    }
-                },
-                "risk_management": {
-                    "warning": "샤덴프로이데(타인의 불행에서 느끼는 기쁨)로 이어져 자신의 평판과 자존감 훼손",
-                    "solution": "자기 평가 회복 (타인과의 비교 중단 및 자신의 목표에 집중)",
-                    "differentiation": {
-                        "with_longing": {
-                            "jealousy": "상대를 끌어내려 격차를 좁히려는 파괴적 방식",
-                            "longing": "나를 끌어올려 격차를 좁히는 발전적 방식"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["시기", "시샘", "경쟁심", "적대감", "불신"],
-                    "antonyms": ["동경", "공감", "찬사", "무관심", "축하"]
-                }
-            },
-            "embarrassment": {
-                "name": "창피함 (Shame / Embarrassment)",
-                "core_definition": "사회적 가치관에서 벗어난 행동이나 실수를 했을 때, 자신의 평가나 신뢰가 손상되었다고 느끼며 느끼는 당황스럽고 괴로운 감정.",
-                "emotional_constituents": ["혐오", "놀람", "두려움", "불편함"],
-                "attributes": {
-                    "nature": "타인의 시선을 전제로 하는 사회적 방어 기제",
-                    "function": "사회적 신뢰를 지키기 위한 경고 및 상황 정정 유도",
-                    "sensitivity": "실패 경험의 부재 시 취약성이 높으며, 신체적 반응(홍조 등)을 동반함"
-                },
-                "developmental_process": {
-                    "initiation": "자신의 결함이나 실수가 타인에게 드러나는 순간의 당황",
-                    "growth_mechanisms": {
-                        "contrast_emotion": "기대되는 사회적 모습과 현재의 모습 간의 괴리 인식",
-                        "imitation_desire": "신뢰 회복을 위한 솔직한 인정과 대처 노력"
-                    }
-                },
-                "risk_management": {
-                    "warning": "얼버무림이나 감추기는 오히려 부정적 감정을 증폭시키고 평판을 악화시킴",
-                    "solution": "솔직한 감정 표현 ('창피하다'고 인정하기) 및 회복탄력성 활용",
-                    "differentiation": {
-                        "with_denial": {
-                            "honest_admission": "실수를 인정하여 좋은 인상으로 전환하는 성숙한 방식",
-                            "evasion": "상황을 숨기려다 찝찝함과 불안을 야기하는 미성숙한 방식"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["부끄러움", "수치심", "민망함", "난처함", "불명예"],
-                    "antonyms": ["자부심", "자랑스러움", "자신감", "자긍심", "파렴치"]
-                }
-            },
-            "humiliation": {
-                "name": "굴욕감 (Humiliation)",
-                "core_definition": "타인에게 굴복당하거나 열등한 위치로 내몰렸다고 느끼는 감정으로, 수치심과 억울함이 분노·증오와 결합된 상태.",
-                "emotional_constituents": ["혐오", "두려움", "분노", "수치심", "열등감"],
-                "attributes": {
-                    "nature": "자신을 열등한 위치로 몰아넣은 대상에 대한 강렬한 적대감",
-                    "function": "상황에 대한 복수 욕구 자극 혹은 자기 부정(자기 낙인)으로의 내면화",
-                    "sensitivity": "인정 욕구가 강하거나 실패 경험이 부족할 때 더욱 치명적으로 작용"
-                },
-                "developmental_process": {
-                    "initiation": "타인의 악의적 언행이나 존중 부족으로 인한 자아의 훼손 경험",
-                    "growth_mechanisms": {
-                        "contrast_emotion": "이상적인 나의 모습과 현재 굴복당한 모습 간의 괴리",
-                        "imitation_desire": "복수하고 싶은 충동을 성취를 위한 도약으로 전환하려는 의지"
-                    }
-                },
-                "risk_management": {
-                    "warning": "자기 부정('나는 안 돼')으로 인한 무기력증 및 타인에 대한 증오 강화",
-                    "solution": "인정받고 싶은 다른 롤모델 설정 및 의도적인 '상황적 타인 탓'을 통한 자기 보호",
-                    "differentiation": {
-                        "with_revenge": {
-                            "growth_as_revenge": "자신의 능력을 끌어올려 결과를 증명하는 긍정적 복수",
-                            "destructive_revenge": "상대를 파괴하거나 비난하여 평판을 손상시키는 소모적 복수"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["치욕", "수모", "원한", "분함", "통한", "불명예"],
-                    "antonyms": ["영예", "명예", "자부심", "영광", "명성"]
-                }
-            },
-            "self_esteem": {
-                "name": "자존감 (Self-Esteem)",
-                "core_definition": "자신의 장단점을 포함한 있는 그대로의 모습을 받아들이고, 스스로 가치 있는 존재임을 인정하며 존중하는 마음.",
-                "emotional_constituents": ["분노", "기쁨", "신뢰", "자기 확신"],
-                "attributes": {
-                    "nature": "내면의 가치 평가와 자신에 대한 신뢰가 결합된 상태",
-                    "function": "일상의 만족감, 원만한 인간관계 형성, 실패를 대하는 회복탄력성 제공",
-                    "types": {
-                        "surface": "언어로 명확히 표현 가능한 장점과 가치 인식",
-                        "potential": "자각하기 어려우나 무의식적인 행동에 영향을 미치는 깊은 자기 가치 평가"
-                    }
-                },
-                "developmental_process": {
-                    "initiation": "체면과 허영심을 내려놓고 자기 자신을 객관적으로 마주하기",
-                    "growth_mechanisms": {
-                        "milestone_setting": "원대한 목표를 단계적 마일스톤으로 세분화하여 달성",
-                        "reflection": "타인과의 비교가 아닌 '어제의 나'와 '오늘의 나'를 비교하는 성찰"
-                    }
-                },
-                "risk_management": {
-                    "warning": "표면적 자존감과 잠재적 자존감의 불균형(위기 시 방어적 태도) 및 타인과의 과도한 비교",
-                    "solution": "작지만 확실한 성공 경험 기록(Small Wins) 및 유연한 목표 재설정",
-                    "differentiation": {
-                        "with_external_validation": {
-                            "self_esteem": "자신의 가치를 스스로 증명하고 존중하는 내적 중심",
-                            "ego_vanity": "타인의 평가와 시선에 의존하여 유지되는 불안정한 껍데기"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["긍지", "프라이드", "자긍심", "자기 확신", "자기 긍정감"],
-                    "antonyms": ["자기 부정", "자기 비하", "비굴함", "열등감", "수치심"]
-                }
-            },
-            "inferiority": {
-                "name": "열등감 (Inferiority)",
-                "core_definition": "타인이나 사회적 기준과 자신을 비교하며 자신이 뒤떨어져 있다고 느끼는, 낮은 자기 긍정감에서 비롯된 복합적 위축 상태.",
-                "emotional_constituents": ["슬픔", "두려움", "혐오", "분노", "무력감"],
-                "attributes": {
-                    "nature": "상대적 결핍 인식과 완벽주의적 이상 자아 사이의 괴리에서 오는 위축",
-                    "function": "자신을 낮게 평가하게 하여 성장의 기회를 스스로 차단하는 방어 기제",
-                    "sensitivity": "자신의 가치를 외적 기준(타인 평가, 사회적 잣대)에 둘수록 강하게 발현"
-                },
-                "developmental_process": {
-                    "initiation": "비교 대상(타인, 사회, 이상적 자아)과 현재의 자신을 대조하며 느끼는 패배감",
-                    "growth_mechanisms": {
-                        "evaluation_shift": "상대 평가에서 절대/주관적 평가로의 전환",
-                        "compensation": "열등한 지점을 실질적 능력으로 보완하려는 노력"
-                    }
-                },
-                "risk_management": {
-                    "warning": "보이는 모습에 집착한 잘못된 보상(예: 과시적 소비)은 오히려 더 큰 고통과 열등감을 초래함",
-                    "solution": "자신에 대한 주관적 진실성(과거의 나 대비 성장) 확보 및 직접/간접 보상 전략 수립",
-                    "differentiation": {
-                        "compensation_strategy": {
-                            "direct": "해당 영역의 실질적 역량 강화를 통해 결핍을 근본적으로 보완",
-                            "indirect": "타 영역의 가치 있는 성과를 통해 전체적인 자기 신뢰 회복"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["주눅 듦", "자신 없음", "패배감", "위축감", "콤플렉스"],
-                    "antonyms": ["우월감", "자존심", "자부심", "긍지", "자신감"]
-                }
-            },
-            "guilt_complex": {
-                "name": "죄책감 (Guilt)",
-                "core_definition": "자신의 행동이 도덕적 기준이나 바람직한 상태에서 벗어났다는 인식에서 비롯된, 후회와 스스로를 책망하는 고통스러운 감정 상태.",
-                "emotional_constituents": ["기쁨(옳은 행동 욕구)", "두려움", "슬픔", "혐오", "부끄러움"],
-                "attributes": {
-                    "nature": "행위와 결과에 대한 반성적 자책",
-                    "function": "자신의 행동을 수정하고 타인에 대한 존중을 회복하도록 돕는 유익한 사회적 경고",
-                    "distinction": {
-                        "with_shame": "수치심은 '자기 존재(Who I am)'를 부정하나, 죄책감은 '행위(What I did)'를 교정하고자 함"
-                    }
-                },
-                "developmental_process": {
-                    "initiation": "바람직하지 않은 행동으로 인해 타인이나 공동체에 피해를 주었다는 인지",
-                    "growth_mechanisms": {
-                        "reflection": "행동의 원인 분석 및 실수를 반복하지 않기 위한 행동 수정",
-                        "reconciliation": "진심 어린 사과와 구체적인 회복 행동을 통한 관계 복원"
-                    }
-                },
-                "risk_management": {
-                    "warning": "부정/회피(자기 정당화, 책임 회피성 분노)나 고립은 죄책감을 미성숙하게 변형시켜 우울감을 초래함",
-                    "solution": "심리적 회복 노력과 함께 상대에게 부담을 주지 않는 태도로 진솔하게 사과 및 대안 제시",
-                    "differentiation": {
-                        "behavior_correction": {
-                            "mature": "행동 교정 및 관계 회복 노력을 통해 기억을 긍정적으로 덮음",
-                            "immature": "책임을 전가하거나 피해 관련 접촉을 피하며 고립을 자초함"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["자책감", "자기 처벌적 감정", "양심의 가책", "죄의식", "회한"],
-                    "antonyms": ["자존감", "만족감", "자부심", "긍지", "자기 인정"]
-                }
-            },
-            "dissatisfaction": {
-                "name": "불만 (Dissatisfaction)",
-                "core_definition": "현재 상태나 타인과의 관계에서 욕구가 충족되지 않아 발생하는 당황스럽고 괴로운 감정 상태로, 무언가 변화가 필요하다는 강력한 신호.",
-                "emotional_constituents": ["슬픔", "혐오", "놀람", "예기(기대)", "좌절감"],
-                "attributes": {
-                    "nature": "충족되지 않은 욕구에 대한 능동적 반응이자 변화를 요구하는 에너지",
-                    "function": "사고방식과 인식의 왜곡을 점검하고 삶의 구체적인 바람을 재인식하도록 유도",
-                    "sensitivity": "현대 사회의 복잡성과 모호함으로 인해 정체불명의 막연한 불만으로 발현되기 쉬움"
-                },
-                "developmental_process": {
-                    "initiation": "이상과 현실 사이의 간극 혹은 타인과의 관계에서의 욕구 결핍 확인",
-                    "growth_mechanisms": {
-                        "pattern_analysis": "인식의 왜곡 점검 및 문제 상황에 대한 능동적 판단(신경 쓸 일인가, 넘길 일인가)",
-                        "re-framing": "불평/비난을 희망/제안으로 전환하여 소통"
-                    }
-                },
-                "risk_management": {
-                    "warning": "불평을 습관화하거나 원인을 타인에게만 돌리는 고착된 부정적 패턴",
-                    "solution": "지금의 나를 기분 좋게 만드는 작은 기쁨(Small Joys) 실천 및 구체적인 이상 실현 목표로의 세분화",
-                    "differentiation": {
-                        "communication_style": {
-                            "destructive": "상대를 향한 비난과 불평으로 관계와 감정을 악화시키는 방식",
-                            "constructive": "희망 사항을 제안하여 욕구를 충족시키고 관계를 개선하는 방식"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["불만족", "불평", "욕구불만", "난색", "좌절감"],
-                    "antonyms": ["만족", "충만감", "충분함", "소망 성취", "평온"]
-                }
-            },
-            "loneliness": {
-                "name": "고독감 (Loneliness)",
-                "core_definition": "자신이 바라는 사회적 관계나 인간관계의 기대치와 실제 달성 수준 사이에 발생하는 괴리로 인해 느끼는 은근한 슬픔과 쓸쓸함.",
-                "emotional_constituents": ["슬픔", "혐오", "두려움", "공허감"],
-                "attributes": {
-                    "nature": "타인과의 연결을 추구하게 만드는 본능적 생존 기제",
-                    "function": "부족한 관계를 회복하거나 혼자 있는 시간의 가치를 재발견하도록 유도",
-                    "sensitivity": "관계의 완벽성을 추구하는 완벽주의 성향일수록 심화됨"
-                },
-                "developmental_process": {
-                    "initiation": "실제 인간관계의 수준이 자신의 기대치에 미치지 못함을 인지할 때 발생",
-                    "growth_mechanisms": {
-                        "perception_shift": "관계의 '완벽한 이해'에 대한 기대를 낮추고 소소한 교류에 가치를 부여",
-                        "solitude_enjoyment": "혼자 있는 시간을 사색과 취미의 기회로 전환(Solitude의 능동적 활용)"
-                    }
-                },
-                "risk_management": {
-                    "warning": "사람들 속에 있으면서도 이해받지 못한다고 느끼는 소외감(고립감) 방치",
-                    "solution": "기대치 조정, 관계에 대한 감사, 혼자만의 시간을 즐기는 라이프스타일 구축",
-                    "differentiation": {
-                        "with_state": {
-                            "loneliness": "바람과 현실의 괴리에서 오는 고통스러운 감정",
-                            "solitude": "혼자 있는 상태를 사색과 재충전으로 즐기는 평온한 상태"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["고립감", "소외감", "적막감", "공허감", "외로움"],
-                    "antonyms": ["연대감", "동료의식", "만족감", "충족감", "친밀감"]
-                }
-            },
-            "need_recognition": {
-                "name": "인정 욕구 (Need for Recognition)",
-                "core_definition": "타인에게 관심을 받고 높게 평가받음으로써 자신이 가치 있는 존재임을 확인하려는 강한 바람.",
-                "emotional_constituents": ["기쁨(칭찬의 쾌감)", "두려움(존재감 상실)", "예기(관심)", "불안"],
-                "attributes": {
-                    "nature": "타인의 반응을 통해 자아 가치를 확인하려는 외적 중심의 에너지",
-                    "function": "적절할 경우 자기 성장과 어필의 동력이 되나, 과할 경우 왜곡된 자기 평가와 의존성 유발",
-                    "sensitivity": "자신감이 낮을 때 결핍 보상으로 강하게 발현되며, 쾌감에 대한 탐닉으로 이어지기 쉬움"
-                },
-                "developmental_process": {
-                    "initiation": "타인의 긍정적인 반응과 관심을 통해 자신의 가치를 입증하려는 시도",
-                    "growth_mechanisms": {
-                        "motivation_shift": "외적 동기(타인의 평가)에서 내적 동기(재미, 자기 효능감)로 중심 이동",
-                        "self_validation": "타인의 인정을 넘어 스스로에게 자랑스러운 존재가 되는 과정"
-                    }
-                },
-                "risk_management": {
-                    "warning": "외부 평가에만 의존할 경우 비판에 극도로 취약해지며, 과시적 소비나 충동적 행동을 초래함",
-                    "solution": "매슬로의 욕구 단계를 인식하여 자기실현으로 나아가기, 성과의 기준을 '나의 재미와 노력'으로 전환",
-                    "differentiation": {
-                        "validation_source": {
-                            "external": "SNS 좋아요, 타인의 칭찬 등 반응에 따라 가치가 결정되는 불안정한 상태",
-                            "internal": "자신이 세운 기준과 성취 자체에서 기쁨을 느끼는 안정적인 상태"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["자기 과시욕", "존중 욕구", "자기주장 욕구"],
-                    "antonyms": ["자기 충족", "겸허", "겸손", "자족"]
-                }
-            },
-            "superiority": {
-                "name": "우월감 (Superiority)",
-                "core_definition": "능력이나 지위 등 특정 기준에서 타인보다 뛰어나다고 느끼며 얻는 만족과 기쁨.",
-                "emotional_constituents": ["분노(경쟁심)", "신뢰(자기 능력)", "기쁨(승리감)"],
-                "attributes": {
-                    "nature": "상대적 비교를 통해 자아의 우위를 확인하려는 감정",
-                    "function": "경쟁 상황에서 의욕과 향상심을 고취하는 성장의 원동력",
-                    "sensitivity": "자신감 부족(열등 콤플렉스)을 가리기 위한 방어 기제로 작용할 때 '우월 콤플렉스'로 변질"
-                },
-                "developmental_process": {
-                    "initiation": "타인과의 비교나 경쟁에서 승리했을 때 느끼는 쾌감",
-                    "growth_mechanisms": {
-                        "perspective_shift": "상대적 비교(타인)에서 절대적 평가(스스로와의 경쟁)로 의식의 중심 이동",
-                        "transcendence": "승리의 쾌감을 맛본 후 즉시 집착을 버리고 다음 성장의 단계로 이행"
-                    }
-                },
-                "risk_management": {
-                    "warning": "우월감이 주는 도파민 쾌감에 중독되어 전능감이나 오만한 태도로 이어지는 것",
-                    "solution": "우월감을 느낀 즉시 내려놓기, 내면의 진짜 자신감(지식/경험/지혜) 함양",
-                    "differentiation": {
-                        "nature_of_confidence": {
-                            "fragile": "지위나 자산에 의존하며 타인과의 비교를 통해 유지되는 불안정한 우월감",
-                            "true": "외부 요소를 잃어도 지식과 기술에서 가치를 찾는 흔들리지 않는 자기 신뢰"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["우월 의식", "승리감", "엘리트 의식", "자부"],
-                    "antonyms": ["열등감", "열등 의식", "뒤처지는 느낌", "콤플렉스"]
-                }
-            },
-            "greed": {
-                "name": "고독욕 (Desire for Solitude)",
-                "core_definition": "혼자 있는 환경에서 안도감과 편안함을 느끼며, 타인의 간섭 없이 고립된 상태에 머무르기를 강력히 원하는 마음.",
-                "emotional_constituents": ["기쁨(안도감)", "두려움(타인에 대한 피로감)", "혐오(관계의 소음)", "평온"],
-                "attributes": {
-                    "nature": "내향적 에너지 회복을 위한 필수적 욕구이자 휴식의 한 형태",
-                    "function": "복잡한 인간관계에서 소진된 에너지를 재충전하고 내면의 사고에 집중하게 함",
-                    "sensitivity": "사회적 고립이 신체 건강에 미치는 악영향과 균형을 이루어야 하는 조절 능력 필요"
-                },
-                "developmental_process": {
-                    "initiation": "관계에서의 피로 누적 및 혼자만의 시간에 대한 긍정적 경험",
-                    "growth_mechanisms": {
-                        "balance": "내향적 성향의 인정과 혼자만의 시간을 가치 있게 활용하는 고고함 유지",
-                        "social_nutrition": "고독을 즐기되 신체적/정신적 건강을 위해 최소한의 사회적 루틴을 병행"
-                    }
-                },
-                "risk_management": {
-                    "warning": "고독 자체가 건강 위험 요인(비탄과 유사한 수준의 신체적 위협)이 될 수 있음, 지나친 완고함 및 자기중심성 경계",
-                    "solution": "사회적 영양 섭취(매일 5회 이상의 가벼운 대면/통화 커뮤니케이션 루틴) 실천",
-                    "differentiation": {
-                        "status_types": {
-                            "healthy_solitude": "고독을 즐기면서도 필요한 사회적 접촉을 유지하는 건강한 자발적 고립",
-                            "unhealthy_isolation": "사회적 소통을 불안해하며 고립을 통해 점차 자기중심적으로 변하는 위험한 상태"
-                        }
-                    }
-                },
-                "spectrum": {
-                    "synonyms": ["고고함", "혼자 지향", "독립적 고립"],
-                    "antonyms": ["고독감", "고립감", "소외감", "외로움", "공허감"]
-                }
-            },
-            "self_sacrifice": {
-                "name": "자기 희생심 (Self-Sacrifice)",
-                "core_definition": "자신의 이익, 욕구, 행복을 포기하고 타인이나 목적을 위해 헌신하려는 마음. 그러나 한계를 넘어서면 자기 학대와 왜곡된 관계를 초래하는 감정.",
-                "emotional_constituents": ["두려움", "혐오", "슬픔", "예기(인정 기대)", "답답함"],
-                "attributes": {
-                    "nature": "헌신이라는 가면 뒤에 숨은 인정 욕구와 자기 비하적 경향",
-                    "function": "타인의 인정 확인 및 일시적 가치 증명, 그러나 장기적으론 신체/정신적 소진 초래",
-                    "sensitivity": "자존감이 낮을 때 더욱 강하게 발현되며, 헌신을 통해 종속적 위치를 자처하기 쉬움"
-                },
-                "developmental_process": {
-                    "initiation": "고통스러운 상황에서 무의식적으로 '내가 참아야지'라며 자신을 뒤로 미루는 반사적 태도",
-                    "growth_mechanisms": {
-                        "boundary_setting": "헌신의 경계를 명확히 설정하고 '이 이상은 하지 않겠다'는 결단",
-                        "self_responsibility": "타인을 돕기에 앞서 자신의 몸과 마음을 돌보는 것을 '첫 번째 책임'으로 인식"
-                    }
-                },
-                "risk_management": {
-                    "warning": "답답함과 찜찜함(희생의 한계 신호)을 방치하여 불만, 원망, 공허함으로 발전하는 상황",
-                    "solution": "주장적 의사소통(Assertive Communication)을 통한 거절 및 대안 제시, 타인의 요구와 나의 에너지를 객관적 분리",
-                    "differentiation": {
-                        "types_of_devotion": {
-                            "healthy": "스스로 결정하고 선택하는 존중 기반의 능동적 헌신",
-                            "unhealthy": "죄책감이나 낮은 자존감 때문에 떠밀리듯 반복되는 종속적 희생"
-                        }
-                    }
-                }
-            }
+        // 감정 카테고리별 테일윈드 스타일 매핑 (읽기 전용 카드용)
+        const catStyles = {
+            'cat-joy': 'bg-yellow-50 text-yellow-800 border-yellow-200',
+            'cat-love': 'bg-pink-50 text-pink-800 border-pink-200',
+            'cat-anx': 'bg-purple-50 text-purple-800 border-purple-200',
+            'cat-ang': 'bg-red-50 text-red-800 border-red-200',
+            'cat-sad': 'bg-blue-50 text-blue-800 border-blue-200'
         };
 
-        const modalOverlay = document.getElementById('emotionModal');
-        const modalHeader = document.getElementById('modalHeader');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalBody = document.getElementById('modalBody');
-        const closeBtn = document.getElementById('closeModal');
+        // DOM Elements
+        const journalForm = document.getElementById('journalForm');
+        const factInput = document.getElementById('factInput');
+        const emotionInput = document.getElementById('emotionInput');
+        const expectationInput = document.getElementById('expectationInput');
+        const storyInput = document.getElementById('storyInput');
+        const shadowInput = document.getElementById('shadowInput');
         
-        document.querySelectorAll('[data-emotion]').forEach(element => {
-            element.addEventListener('click', () => {
-                const emotionKey = element.getAttribute('data-emotion');
-                const bgColor = element.getAttribute('data-color');
-                const textColor = element.getAttribute('data-text');
-                openModal(emotionKey, bgColor, textColor);
+        // 트리거 입력창
+        const triggerInputs = {
+            '🏃 행동/태도': document.getElementById('triggerBehavior'),
+            '🗣️ 언어/소통': document.getElementById('triggerCommunication'),
+            '😠 표정/비언어': document.getElementById('triggerNonVerbal'),
+            '🧩 성향/가치관': document.getElementById('triggerValues'),
+            '✍️ 기타 트리거': document.getElementById('triggerOther')
+        };
+        const triggerChips = document.querySelectorAll('.trigger-chip');
+        
+        // 커스텀 모달
+        const customModal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        
+        // 감정 사전 모달
+        const emotionModal = document.getElementById('emotionModal');
+        const emotionModalCloseBtn = document.getElementById('emotionModalCloseBtn');
+        const btnOpenEmotionCard = document.getElementById('btnOpenEmotionCard');
+        const emotionGrid = document.getElementById('emotionGrid');
+
+        let selectedTriggers = [];
+
+        // 알림창 헬퍼
+        function showAlert(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+        }
+        modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
+
+        // ----------------------------------------------------
+        // 감정 사전 모달 렌더링 (상세 필드 포함 UI 개선)
+        // ----------------------------------------------------
+        
+        function renderEmotions() {
+            emotionGrid.innerHTML = '';
+            
+            emotionsData.forEach(emo => {
+                const card = document.createElement('div');
+                card.className = `flex flex-col p-4 rounded-xl border shadow-sm h-full ${catStyles[emo.cat] || 'bg-stone-50 text-stone-700 border-stone-200'}`;
+                
+                let detailsHTML = '';
+                if (emo.sit || emo.body || emo.aff) {
+                    detailsHTML = `
+                        <div class="mt-auto pt-3 border-t border-black/10 space-y-1.5 text-[11px] opacity-80 leading-snug">
+                            ${emo.sit ? `<p><strong class="font-bold">상황:</strong> ${emo.sit}</p>` : ''}
+                            ${emo.body ? `<p><strong class="font-bold">신체:</strong> ${emo.body}</p>` : ''}
+                            ${emo.aff ? `<p><strong class="font-bold">확언:</strong> ${emo.aff}</p>` : ''}
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <span class="text-[15px] font-extrabold mb-1.5">${emo.name}</span>
+                    <span class="text-xs font-medium opacity-90 leading-relaxed break-keep mb-3">${emo.desc}</span>
+                    ${detailsHTML}
+                `;
+                
+                emotionGrid.appendChild(card);
+            });
+        }
+
+        // 모달 열기
+        btnOpenEmotionCard.addEventListener('click', () => {
+            renderEmotions();
+            emotionModal.classList.remove('hidden');
+        });
+
+        // 모달 닫기
+        emotionModalCloseBtn.addEventListener('click', () => {
+            emotionModal.classList.add('hidden');
+        });
+        
+        emotionModal.addEventListener('click', (e) => {
+            if (e.target === emotionModal) emotionModal.classList.add('hidden');
+        });
+
+        // ----------------------------------------------------
+        // 기존 일기장 폼 로직
+        // ----------------------------------------------------
+        
+        triggerChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const val = chip.getAttribute('data-value');
+                if (selectedTriggers.includes(val)) {
+                    selectedTriggers = selectedTriggers.filter(t => t !== val);
+                    chip.classList.remove('bg-amber-800', 'text-white', 'border-amber-800');
+                    chip.classList.add('bg-stone-100', 'text-stone-700', 'border-stone-200');
+                } else {
+                    selectedTriggers.push(val);
+                    chip.classList.remove('bg-stone-100', 'text-stone-700', 'border-stone-200');
+                    chip.classList.add('bg-amber-800', 'text-white', 'border-amber-800');
+                }
             });
         });
 
-        function openModal(emotionKey, bgColor, textColor) {
-            const data = emotionData[emotionKey];
-            if(!data) return;
+        function getEntries() {
+            const entries = localStorage.getItem('psych_journal_entries');
+            return entries ? JSON.parse(entries) : [];
+        }
 
-            // 색상 값이 없을 경우를 대비한 기본값 처리
-            bgColor = bgColor || '#2C3E50';
-            textColor = textColor || '#ffffff';
+        function saveEntries(entries) {
+            localStorage.setItem('psych_journal_entries', JSON.stringify(entries));
+        }
 
-            modalHeader.style.backgroundColor = bgColor;
-            modalHeader.style.color = textColor;
+        function renderEntries() {
+            const entries = getEntries();
+            const entriesContainer = document.getElementById('entriesContainer');
+            const entryCount = document.getElementById('entryCount');
+            entryCount.textContent = `${entries.length}개의 기록`;
+            
+            if (entries.length === 0) {
+                entriesContainer.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-400">
+                        <p class="text-sm">아직 작성된 성찰 기록이 없습니다. 위 양식을 통해 첫 번째 일기를 작성해보세요.</p>
+                    </div>
+                `;
+                return;
+            }
 
-            let korName, engName, tagsHtml, pointsHtml, descText, relatedHtml = '';
-
-            // 1차 감정 포맷인 경우
-            if (data.kor) {
-                korName = data.kor;
-                engName = data.eng;
-                descText = data.desc;
+            entriesContainer.innerHTML = '';
+            entries.forEach((entry, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm hover:shadow transition-shadow';
                 
-                tagsHtml = data.tags ? data.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : '';
-                pointsHtml = data.points ? data.points.map(point => `<li>${point}</li>`).join('') : '';
+                let chipTriggersHTML = entry.triggers && entry.triggers.length > 0 
+                    ? entry.triggers.map(t => `<span class="px-2.5 py-1 bg-amber-50 text-amber-800 text-xs rounded-full border border-amber-200/60 font-medium">${escapeHtml(t)}</span>`).join('') 
+                    : '';
                 
-                if (data.related_emotions && data.related_emotions.length > 0) {
-                    let relatedTags = data.related_emotions.map(emotion => `<span class="related-tag">${emotion}</span>`).join('');
-                    relatedHtml = `<h3>분류된 파생 및 유의 감정</h3><div class="related-tags-container">${relatedTags}</div>`;
+                let detailedTriggersHTML = '';
+                if (entry.categorizedTriggers && Object.keys(entry.categorizedTriggers).length > 0) {
+                    const detailItems = Object.entries(entry.categorizedTriggers).map(([cat, val]) => 
+                        `<div class="text-xs text-stone-700 bg-white border border-stone-200 p-2 rounded-lg"><span class="font-bold text-stone-500 mr-1">${cat}:</span> ${escapeHtml(val)}</div>`
+                    ).join('');
+                    detailedTriggersHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">${detailItems}</div>`;
                 }
-            } 
-            // 2, 3차 복합 감정 포맷인 경우
-            else if (data.name) {
-                const nameMatch = data.name.match(/(.+)\s*\((.+)\)/);
-                korName = nameMatch ? nameMatch[1].trim() : data.name;
-                engName = nameMatch ? nameMatch[2].trim() : '';
-                descText = data.core_definition;
 
-                tagsHtml = data.emotional_constituents ? data.emotional_constituents.map(tag => `<span class="tag">${tag}</span>`).join('') : '';
-                
-                let pointsArray = [];
-                if(data.attributes) {
-                    if(data.attributes.nature) pointsArray.push(`<b>본질:</b> ${data.attributes.nature}`);
-                    if(data.attributes.function) pointsArray.push(`<b>기능:</b> ${data.attributes.function}`);
+                let triggerContent = '';
+                if (!chipTriggersHTML && !detailedTriggersHTML) {
+                    triggerContent = '<span class="text-stone-400 text-xs">작성된 트리거 없음</span>';
+                } else {
+                    triggerContent = `
+                        ${chipTriggersHTML ? `<div class="flex flex-wrap gap-1.5 mb-2">${chipTriggersHTML}</div>` : ''}
+                        ${detailedTriggersHTML}
+                    `;
                 }
-                if(data.developmental_process && data.developmental_process.initiation) {
-                    pointsArray.push(`<b>발현:</b> ${data.developmental_process.initiation}`);
-                }
-                if(data.risk_management) {
-                    if(data.risk_management.warning) pointsArray.push(`<b>주의점:</b> ${data.risk_management.warning}`);
-                    if(data.risk_management.solution) pointsArray.push(`<b>해결책:</b> ${data.risk_management.solution}`);
-                }
-                pointsHtml = pointsArray.map(point => `<li>${point}</li>`).join('');
 
-                if (data.spectrum && data.spectrum.synonyms && data.spectrum.synonyms.length > 0) {
-                    let relatedTags = data.spectrum.synonyms.map(emotion => `<span class="related-tag">${emotion}</span>`).join('');
-                    relatedHtml = `<h3>분류된 파생 및 유의 감정</h3><div class="related-tags-container">${relatedTags}</div>`;
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-stone-100 gap-2">
+                        <span class="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1 rounded-full w-fit">성찰 기록 #${entries.length - index}</span>
+                        <span class="text-xs text-stone-400">${entry.date}</span>
+                    </div>
+                    <div class="space-y-4 text-sm sm:text-base">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">1. 일어난 사건 (사실)</h4>
+                            <p class="text-stone-800 bg-stone-50 p-3 rounded-xl">${escapeHtml(entry.fact)}</p>
+                        </div>
+                        <div class="bg-stone-50/50 p-3 rounded-xl border border-stone-100">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">2. 작동된 트리거</h4>
+                            ${triggerContent}
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">3. 느낀 감정</h4>
+                                <p class="text-stone-800 bg-indigo-50/40 p-3 rounded-xl border border-indigo-100/50">${escapeHtml(entry.emotion)}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">4. 나의 기대 (바램)</h4>
+                                <p class="text-stone-800 bg-stone-50 p-3 rounded-xl">${escapeHtml(entry.expectation || '')}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1">5. 내가 만든 생각 / 스토리 (허상)</h4>
+                            <p class="text-stone-800 bg-stone-50 p-3 rounded-xl border-l-2 border-amber-700">${escapeHtml(entry.story)}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">6. 내 안의 싫어하는 모습 (거울)</h4>
+                            <p class="text-stone-800 bg-amber-50/50 border border-amber-100/50 p-3 rounded-xl">${escapeHtml(entry.shadow)}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-stone-100 flex justify-end">
+                        <button onclick="deleteEntry(${entry.id})" class="text-xs text-rose-500 hover:text-rose-700 font-medium px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors">
+                            기록 삭제
+                        </button>
+                    </div>
+                `;
+                entriesContainer.appendChild(card);
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        window.deleteEntry = function(id) {
+            let entries = getEntries();
+            entries = entries.filter(e => e.id !== id);
+            saveEntries(entries);
+            renderEntries();
+            showAlert('삭제 완료', '성찰 기록이 삭제되었습니다.');
+        }
+
+        journalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const categorizedTriggers = {};
+            for (const [key, inputEl] of Object.entries(triggerInputs)) {
+                if (inputEl && inputEl.value.trim()) {
+                    categorizedTriggers[key] = inputEl.value.trim();
                 }
             }
 
-            modalTitle.innerHTML = `${korName} <span class="eng" style="color: ${textColor}">${engName}</span>`;
-            modalBody.innerHTML = `
-                <div>${tagsHtml}</div>
-                <h3>정의와 구성 요소</h3>
-                <p>${descText}</p>
-                <h3>주요 특성</h3>
-                <ul>${pointsHtml}</ul>
-                ${relatedHtml}
-                <p style="font-size:0.9em; color:#888; text-align:right; margin-top:30px; border-top:1px dashed #eee; padding-top:10px;">
-                    ※ 오시바 요시노부 『감정어 사전』 및 플루칙 스펙트럼 기반 재분류
-                </p>
-            `;
+            const newEntry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                fact: factInput.value.trim(),
+                triggers: [...selectedTriggers],
+                categorizedTriggers: categorizedTriggers,
+                emotion: emotionInput.value.trim(),
+                expectation: expectationInput.value.trim(), 
+                story: storyInput.value.trim(),
+                shadow: shadowInput.value.trim()
+            };
 
-            modalOverlay.classList.add('active');
+            const entries = getEntries();
+            entries.unshift(newEntry); 
+            saveEntries(entries);
+            renderEntries();
 
-            setTimeout(() => {
-                modalBody.scrollTop = 0;
-            }, 10);
-        }
+            // 폼 리셋
+            journalForm.reset();
+            selectedTriggers = [];
+            triggerChips.forEach(chip => {
+                chip.classList.remove('bg-amber-800', 'text-white', 'border-amber-800');
+                chip.classList.add('bg-stone-100', 'text-stone-700', 'border-stone-200');
+            });
+            Object.values(triggerInputs).forEach(input => { if(input) input.value = ''; });
 
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-        }
+            showAlert('저장 완료', '내면 성찰 일기가 안전하게 저장되었습니다. 남 탓을 멈추고 자신을 돌아보는 소중한 걸음입니다.');
+        });
 
-        closeBtn.addEventListener('click', closeModal);
-        
-        modalOverlay.addEventListener('click', (e) => {
-            if(e.target === modalOverlay) {
-                closeModal();
-            }
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            journalForm.reset();
+            selectedTriggers = [];
+            triggerChips.forEach(chip => {
+                chip.classList.remove('bg-amber-800', 'text-white', 'border-amber-800');
+                chip.classList.add('bg-stone-100', 'text-stone-700', 'border-stone-200');
+            });
+            Object.values(triggerInputs).forEach(input => { if(input) input.value = ''; });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderEntries();
         });
     </script>
 </body>
 </html>
-
