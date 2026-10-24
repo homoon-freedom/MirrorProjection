@@ -69,7 +69,7 @@
                         <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="지나치게 장황하고 간섭하는 말">장황한 말/간섭</button>
                         <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="날 선 비난이나 가르치려 드는 말투">비난/지적질</button>
                         <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="무시하는 듯한 시선이나 눈빛">무시하는 눈빛/표정</button>
-                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="꽉 막힌 태도와 대화 거부(침묵)">침묵/대화 거부</button>
+                        <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="꽉 막힌 태도와 대화 거 거부(침묵)">침묵/대화 거부</button>
                         <button type="button" class="trigger-chip px-3 py-1.5 rounded-full text-xs sm:text-sm bg-stone-100 text-stone-700 border border-stone-200 hover:bg-amber-50 hover:border-amber-300 transition-colors" data-value="이기적이거나 뻔뻔한 태도">이기적/뻔뻔함</button>
                     </div>
                     
@@ -154,15 +154,23 @@
                         placeholder="예: 나 스스로도 결정을 내리지 못하고 우왕좌왕할 때가 있는데, 남이 그걸 보여주니 몹시 불안하고 혐오스러웠다."></textarea>
                 </div>
 
-                <!-- Submit & List Buttons -->
-                <div class="flex items-center justify-end space-x-4 pt-4 border-t border-stone-100">
-                    <button type="button" id="btnOpenListModal" class="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-600 hover:bg-stone-100 text-sm font-medium transition-colors">
-                        저장 목록 보기
-                    </button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-semibold shadow-sm transition-all">
-                        저장하기
-                    </button>
-                </div>
+                <!-- Submit, Audio, & List Buttons -->
+<div class="flex items-center justify-end gap-2 sm:gap-4 pt-4 border-t border-stone-100 overflow-x-auto hide-scrollbar pb-2">
+    <button type="button" id="btnOpenListModal" class="whitespace-nowrap shrink-0 px-4 sm:px-5 py-2.5 rounded-xl border border-stone-300 text-stone-600 hover:bg-stone-100 text-sm font-medium transition-colors">
+        저장목록
+    </button>
+    
+    <!-- 추가된 오디오 태그 및 재생 버튼 -->
+    <audio id="bgmAudio" src="audio/audio.mp3" loop></audio>
+    <button type="button" id="btnPlayAudio" class="whitespace-nowrap shrink-0 px-4 sm:px-5 py-2.5 rounded-xl border border-stone-300 text-stone-600 hover:bg-stone-100 text-sm font-medium transition-colors flex items-center justify-center gap-1.5">
+        <span id="audioIcon">🎵</span> <span id="audioText">오디오 재생</span>
+    </button>
+
+    <button type="submit" class="whitespace-nowrap shrink-0 px-5 sm:px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-semibold shadow-sm transition-all">
+        저장하기
+    </button>
+</div>
+
             </form>
         </main>
     </div>
@@ -574,6 +582,31 @@
             Object.values(triggerInputs).forEach(input => { if(input) input.value = ''; });
 
             showAlert('저장 완료', '내면 성찰 일기가 안전하게 저장되었습니다.');
+        });
+
+        // ----------------------------------------------------
+        // 오디오 재생 제어 기능
+        // ----------------------------------------------------
+        const btnPlayAudio = document.getElementById('btnPlayAudio');
+        const bgmAudio = document.getElementById('bgmAudio');
+        const audioIcon = document.getElementById('audioIcon');
+        const audioText = document.getElementById('audioText');
+        let isAudioPlaying = false;
+
+        btnPlayAudio.addEventListener('click', () => {
+            if (isAudioPlaying) {
+                bgmAudio.pause();
+                audioIcon.textContent = '🎵';
+                audioText.textContent = '오디오 재생';
+            } else {
+                bgmAudio.play().catch(error => {
+                    console.error("오디오 재생 실패:", error);
+                    alert("오디오 파일을 찾을 수 없거나 브라우저 정책에 의해 재생이 차단되었습니다.");
+                });
+                audioIcon.textContent = '⏸️';
+                audioText.textContent = '오디오 정지';
+            }
+            isAudioPlaying = !isAudioPlaying;
         });
     </script>
 </body>
